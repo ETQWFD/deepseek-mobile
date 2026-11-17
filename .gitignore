@@ -1,0 +1,5 @@
+build/
+dist/
+android-standalone/llama.cpp/
+android-standalone/build-android/
+android-standalone/build-android-v7a/

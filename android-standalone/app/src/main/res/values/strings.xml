@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DeepSeek Mobile</string>
+    <string name="accessibility_desc">允许 DeepSeek Mobile 读取当前屏幕上的文字和控件，并在你授权后点击屏幕。用于自动化操作，不会绕过验证码或支付确认。</string>
+</resources>

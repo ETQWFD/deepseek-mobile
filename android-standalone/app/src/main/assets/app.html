@@ -1,0 +1,1671 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>DeepSeek Mobile</title>
+<style>
+:root{
+  --bg:#09090b; --panel:#111114; --panel2:#17171c; --line:#25252d; --line2:#30303a;
+  --text:#ececf1; --muted:#8c8c99; --dim:#666672; --accent:#9be7b4; --accent2:#6fd39a;
+  --danger:#ff7b7b; --user:#1d2a24;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--text);overflow-x:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Noto Sans CJK SC",sans-serif;font-size:14px;overscroll-behavior:none}
+body{display:flex;flex-direction:column;height:100dvh}
+button,input,textarea,select{font-family:inherit;color:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+#top{height:58px;flex:0 0 58px;display:flex;align-items:center;gap:8px;padding:0 10px;border-bottom:1px solid var(--line);background:rgba(9,9,11,.96);position:relative;z-index:20}
+.logo{width:32px;height:32px;border-radius:9px;background:#000;border:1px solid #2c2c34;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:var(--accent);letter-spacing:-1px}
+.brand{display:flex;flex-direction:column;line-height:1.1;min-width:0;max-width:150px;overflow:hidden}
+.brand b{font-size:14px;letter-spacing:.2px}
+.brand small{font-size:9px;color:var(--dim);margin-top:3px;white-space:nowrap}
+.spacer{flex:1}
+.iconbtn{width:32px;height:32px;flex:0 0 32px;border-radius:10px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted)}
+.iconbtn:active{background:#202027}
+.modechip{font-size:10px;padding:4px 7px;border-radius:999px;border:1px solid #2d3a32;background:#121a15;color:#a9e9be;white-space:nowrap;max-width:30vw;overflow:hidden;text-overflow:ellipsis}
+#subbar{flex:0 0 auto;border-bottom:1px solid var(--line);background:#0b0b0e}
+.modes{display:flex;gap:6px;overflow-x:auto;padding:8px 12px 7px;scrollbar-width:none}
+.modes::-webkit-scrollbar{display:none}
+.modes button{flex:0 0 auto;border:1px solid var(--line);background:#121216;color:#9c9caa;border-radius:8px;padding:6px 10px;font-size:11.5px;line-height:1;white-space:nowrap}
+.modes button.active{color:#dfffe9;border-color:#3a5d47;background:#142118}
+.modes button small{display:block;font-size:9px;color:#6d8375;margin-top:4px;font-weight:400}
+.modes button.active small{color:#8eb79c}
+.wsbar{display:flex;align-items:center;gap:6px;padding:6px 12px 7px;font-size:10.5px;color:#7d8b83;border-top:1px solid #17171c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wsbar b{font-weight:500;color:#a8b9ae;overflow:hidden;text-overflow:ellipsis}
+.wsbar span{margin-left:auto;color:#6f8d7a;flex:0 0 auto}
+#main{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
+#chat{flex:1;overflow-y:auto;padding:18px 16px 130px;scroll-behavior:smooth}
+.empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 20px}
+.empty .orb{width:74px;height:74px;border-radius:22px;border:1px solid #2b3a30;background:radial-gradient(circle at 40% 30%,#1d3326,#0c100e 70%);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:var(--accent);margin-bottom:20px;box-shadow:0 0 40px rgba(80,200,130,.09)}
+.empty h1{font-size:23px;margin:0 0 8px;font-weight:650;letter-spacing:.2px}
+.empty p{color:var(--muted);font-size:12.5px;line-height:1.6;margin:0 0 18px;max-width:320px}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:360px}
+.quick button{text-align:left;border:1px solid var(--line);background:var(--panel);color:#d5d5df;border-radius:11px;padding:10px 11px;font-size:12px;line-height:1.3}
+.quick button b{display:block;font-size:11.5px;font-weight:600;color:#e0e0e8;margin-bottom:3px}
+.quick button small{display:block;font-size:9.5px;color:#777784;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quick button:active{background:#1c1c22}
+.msg{display:flex;margin:0 0 20px;gap:10px;align-items:flex-start}
+.msg.user{justify-content:flex-end}
+.avatar{width:27px;height:27px;flex:0 0 27px;border-radius:8px;background:#0b0f0c;border:1px solid #24352a;display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:800;font-size:13px;margin-top:2px}
+.bubble{max-width:82%;border-radius:14px;padding:11px 13px;line-height:1.65;font-size:13.5px;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
+.msg.assistant .bubble{background:var(--panel);border:1px solid var(--line);border-top-left-radius:5px;color:#e4e4ea}
+.msg.user .bubble{background:var(--user);border:1px solid #294235;border-top-right-radius:5px;color:#e9fff0}
+.tools{margin-top:8px;display:flex;flex-direction:column;gap:5px}
+.tool{font-size:11px;color:#a9cdb7;background:#101a14;border:1px solid #24372b;border-radius:7px;padding:5px 8px;display:flex;gap:6px;align-items:flex-start}
+.tool b{font-weight:600;color:#cdeed9;flex:0 0 auto}
+.tool span{color:#7e9c88;word-break:break-all}
+.worklog{margin:-8px 0 14px 37px;display:flex;gap:8px;align-items:flex-start;color:#8fa99a;font-size:11.5px;line-height:1.5}
+.worklog .wdot{width:6px;height:6px;flex:0 0 6px;border-radius:50%;background:#6ea887;margin-top:5px;box-shadow:0 0 0 3px rgba(110,168,135,.08)}
+.worklog .wtext{flex:1;word-break:break-word;white-space:pre-wrap}
+.worklog .wtime{color:#58685f;flex:0 0 auto;font-size:10px}
+.worklog.done .wdot{background:#54c28a}.worklog.error .wdot{background:#d36b6b}.worklog.stop .wdot{background:#d8b36b}.worklog.think .wdot{background:#69a9d6}
+.proc{margin:6px 0 0 42px;max-width:calc(100% - 42px)}
+.proc summary{cursor:pointer;color:#a9cdb7;font-size:12px;padding:7px 10px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);border-radius:10px;list-style:none}
+.proc summary::-webkit-details-marker{display:none}
+.proc summary:before{content:"▸ ";color:#6ea887}
+.proc[open] summary:before{content:"▾ "}
+.proc .pstep{display:flex;gap:8px;padding:6px 10px;color:#8fa99a;font-size:11.5px;border-bottom:1px solid rgba(255,255,255,.04)}
+.proc .pstep .pk{flex:0 0 auto;color:#69a9d6;min-width:48px}
+.proc .pstep .pt{flex:1;white-space:pre-wrap;word-break:break-word}
+.prow{border-bottom:1px solid rgba(255,255,255,.06);padding:2px 0}
+.prow summary{list-style:none;cursor:pointer;padding:7px 0;color:#8fa99a;font-size:11.5px}
+.prow summary::-webkit-details-marker{display:none}
+.prow .ptop{display:flex;gap:9px;align-items:flex-start}
+.prow .picon{width:24px;height:24px;flex:0 0 24px;border-radius:8px;background:#18241c;color:#9be7b4;display:flex;align-items:center;justify-content:center;font-size:11px}
+.prow .ptitle{flex:1;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.prow .ptime{flex:0 0 auto;color:#58685f;font-size:10px;padding-top:3px}
+.prow .pdetail{margin:0 0 8px 33px;padding:9px 11px;background:rgba(255,255,255,.035);border-radius:8px;color:#c7d8cd;font-size:11.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.msgbody{min-width:0;max-width:calc(100% - 37px);flex:1}
+.runhead{display:flex;align-items:center;gap:7px;width:100%;border:1px solid #2a2a33;background:#121216;border-radius:9px;padding:8px 10px;margin:0 0 7px;color:#8d8d99;font-size:11.5px;text-align:left}
+.runhead b{color:#b7b7c2;font-weight:500}.runhead .dur{margin-left:auto;color:#7f8f85}
+#processSheet{position:fixed;inset:0;z-index:82;background:rgba(0,0,0,.58);display:none;align-items:flex-end;justify-content:center;padding:0}
+#processSheet.show{display:flex}
+#processSheet .pbox{width:100%;max-width:560px;max-height:82vh;overflow:auto;background:#111116;border:1px solid #30303a;border-radius:18px 18px 0 0;padding:14px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -20px 60px rgba(0,0,0,.55)}
+#processSheet .phead{display:flex;align-items:center;gap:10px;position:sticky;top:0;background:#111116;padding:2px 0 10px;z-index:2}
+#processSheet .phead h3{font-size:14px;margin:0;flex:1;text-align:center}
+#processSheet .pclose{border:0;background:transparent;color:#aaa;font-size:18px;width:28px;height:28px}
+.pstep{margin:7px 0;border:1px solid #25252d;background:#15151a;border-radius:10px;overflow:hidden}
+.pstep .ptop{display:flex;gap:8px;align-items:flex-start;padding:9px 10px}
+.pstep .picon{width:20px;flex:0 0 20px;height:20px;border-radius:5px;background:#1c2a22;color:#9be7b4;display:flex;align-items:center;justify-content:center;font-size:11px}
+.pstep .ptitle{font-size:11.5px;line-height:1.5;color:#c8c8d2;flex:1;white-space:pre-wrap;word-break:break-word}
+.pstep .ptime{font-size:9.5px;color:#646470;flex:0 0 auto}
+.pstep details{border-top:1px solid #24242c}
+.pstep details summary{cursor:pointer;padding:6px 10px;font-size:10.5px;color:#8fa99a;list-style:none}
+.pstep details pre{margin:0;padding:8px 10px;white-space:pre-wrap;word-break:break-word;color:#a9cdb7;background:#0d0f0e;font:10px/1.5 ui-monospace,Menlo,monospace;max-height:260px;overflow:auto}
+#modelPick{border:1px solid #2b3d31;background:#101712;color:#bbd8c5;border-radius:999px;padding:3px 8px;font-size:10.5px;max-width:32vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#modelPick:active{background:#1a2a20}
+.send.stop{flex-basis:48px;width:48px;font-size:11px;background:#341616;color:#ffb6b6;border:1px solid #6b2a2a}
+.typing{display:inline-flex;gap:4px;align-items:center;color:var(--muted);font-size:12px}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:blink 1.1s infinite}
+.dot:nth-child(2){animation-delay:.18s}.dot:nth-child(3){animation-delay:.36s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+#composer{position:absolute;left:0;right:0;bottom:0;width:100%;box-sizing:border-box;padding:10px 12px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(9,9,11,0),rgba(9,9,11,.97) 26%);z-index:15}
+.composerbox{border:1px solid var(--line2);background:#111115;border-radius:16px;padding:8px 8px 7px 12px;display:flex;flex-direction:column;gap:6px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+#input{width:100%;min-height:38px;max-height:140px;resize:none;border:0;outline:0;background:transparent;color:var(--text);font-size:14px;line-height:1.5;padding:6px 2px}
+#input::placeholder{color:#5d5d68}
+.composerbar{display:flex;align-items:center;gap:7px;padding:0 2px}
+.pill{font-size:10.5px;color:#9fb3a7;background:#121a15;border:1px solid #26382c;border-radius:999px;padding:3px 8px}
+.pill.warn{color:#d8c58f;background:#1a1710;border-color:#3a3322}
+.send{flex:0 0 34px;width:34px;height:34px;border-radius:11px;border:0;background:var(--accent);color:#08120b;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-left:auto}
+.send:disabled{opacity:.35}
+.footnote{text-align:center;font-size:10px;color:#55555f;margin-top:7px}
+/* drawer */
+#drawer{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.5);display:none}
+#drawer.show{display:block}
+.drawerpanel{position:absolute;left:0;top:0;bottom:0;width:82%;max-width:320px;background:#0d0d10;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px calc(16px + env(safe-area-inset-bottom));animation:slide .18s ease-out}
+@keyframes slide{from{transform:translateX(-20px);opacity:.6}to{transform:none;opacity:1}}
+.drawerpanel h3{font-size:12px;color:var(--muted);font-weight:600;margin:4px 6px 10px;letter-spacing:.5px}
+#sessionList{flex:1;overflow:auto}
+.sess{display:flex;align-items:center;gap:8px;padding:10px 10px;border-radius:9px;color:#cfcfd8;font-size:12.5px;margin-bottom:2px}
+.sess:active,.sess.active{background:#1a1a20}
+.sess span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sess i{font-style:normal;color:#666673;font-size:15px;padding:2px 4px}
+.newbtn{display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #294232;background:#111a14;color:#c6f0d5;border-radius:10px;padding:11px;font-size:13px;margin-bottom:14px}
+/* settings */
+#settings{position:fixed;inset:0;z-index:60;background:var(--bg);display:none;flex-direction:column}
+#settings.show{display:flex}
+.shead{height:54px;flex:0 0 54px;display:flex;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid var(--line)}
+.shead b{font-size:15px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;border-bottom:1px solid var(--line);flex:0 0 auto}
+.tabs button{border:1px solid var(--line);background:var(--panel);color:#a7a7b4;border-radius:999px;padding:7px 11px;font-size:11.5px;white-space:nowrap}
+.tabs button.active{color:#d9ffe6;border-color:#3b5a47;background:#132019}
+#settingsBody{flex:1;overflow-y:auto;padding:16px 14px calc(22px + env(safe-area-inset-bottom))}
+.section h2{font-size:13px;margin:0 0 5px;font-weight:650}
+.section .desc{font-size:11.5px;color:var(--muted);line-height:1.6;margin:0 0 14px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11.5px;color:#a8a8b6;margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;background:#131318;border:1px solid #2a2a33;border-radius:10px;padding:10px 11px;font-size:12.5px;outline:0;color:var(--text)}
+.field textarea{min-height:70px;resize:vertical;line-height:1.5}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#3c6a50}
+.row{display:flex;gap:9px}.row>*{flex:1}
+.btn{border:1px solid #30303a;background:#191920;color:#d6d6df;border-radius:10px;padding:10px 13px;font-size:12.5px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#07120b;font-weight:650}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.4}
+.note{border:1px solid #29382e;background:#101711;border-radius:10px;padding:10px 12px;color:#a9c9b4;font-size:11.5px;line-height:1.6;margin:12px 0}
+.note.warn{border-color:#3c3321;background:#17140d;color:#d8c38f}
+.memitem{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 11px;margin-bottom:8px}
+.memitem .mt{font-size:12.5px;line-height:1.5;color:#dfdfe7}
+.memitem .mm{font-size:10.5px;color:#747482;margin-top:6px;display:flex;gap:10px}
+.memitem button{float:right;border:0;background:#1d1d24;color:#a9a9b5;border-radius:7px;font-size:10.5px;padding:5px 7px}
+.statusline{font-size:11.5px;color:#9b9ba8;background:#111115;border:1px solid var(--line);border-radius:9px;padding:9px 10px;white-space:pre-wrap;word-break:break-all;margin-top:10px}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #1d1d24;font-size:12px;color:#c8c8d2}
+.kv span:first-child{flex:0 0 auto;white-space:nowrap}
+.kv span:last-child{color:#8d8d9b;text-align:right;min-width:0}
+/* ask modal */
+#modelSheet{position:fixed;inset:0;z-index:79;background:rgba(0,0,0,.62);display:none;align-items:flex-end;justify-content:center;padding:0}
+#modelSheet.show{display:flex}
+#modelSheet .askbox{border-radius:18px 18px 0 0;max-width:520px;margin-bottom:0}
+#ask{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:24px}
+#ask.show{display:flex}
+.askbox{width:100%;max-width:360px;background:#111116;border:1px solid #30303a;border-radius:16px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.askbox h3{margin:0 0 6px;font-size:15px}
+.askbox p{color:#b6b6c2;font-size:12.5px;line-height:1.6;margin:0 0 14px;white-space:pre-wrap}
+.askbox button{width:100%;text-align:left;margin-bottom:8px;border:1px solid #2e2e38;background:#191920;color:#e4e4ec;border-radius:10px;padding:11px 12px;font-size:12.5px}
+.askbox button:active{background:#22222b}
+.askbox .cancel{text-align:center;color:#888896;background:transparent;border:0;margin-top:2px}
+#toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);background:#20202a;border:1px solid #363642;color:#e8e8ef;padding:9px 13px;border-radius:999px;font-size:12px;z-index:90;opacity:0;transition:.2s;pointer-events:none;max-width:80vw;text-align:center}
+#toast.show{opacity:1}
+@media(max-width:480px){.brand small{display:none}}
+@media(min-width:760px){#chat{padding-left:max(16px,calc(50% - 360px));padding-right:max(16px,calc(50% - 360px))}#composer .composerbox{max-width:760px;margin:0 auto}}
+</style>
+</head>
+<body>
+<div id="top">
+  <div class="logo" id="logo">A</div>
+  <div class="brand"><b>DeepSeek Mobile</b><small>手机原生工作台 · 不依赖电脑</small></div>
+  <div class="spacer"></div>
+  <div class="modechip hidden" id="taskChip">工作中</div>
+  <div class="modechip" id="modeChip">未配置模型</div>
+  <button class="iconbtn" id="btnHistory" aria-label="历史">☰</button>
+  <button class="iconbtn" id="btnSettings" aria-label="设置">⚙</button>
+</div>
+<div id="subbar">
+  <div class="modes" id="modeTabs">
+    <button data-mode="lean">精简<small>少步骤</small></button>
+    <button data-mode="fast">极速<small>最快出结果</small></button>
+    <button data-mode="create">创造<small>写方案/页面</small></button>
+    <button data-mode="model">建模<small>结构/代码</small></button>
+  </div>
+  <div class="wsbar" id="wsBar">📁 工作目录 <b>未选择</b><span>选择 ›</span></div>
+</div>
+<div id="main">
+  <div id="chat"></div>
+  <div id="composer">
+    <div class="composerbox">
+      <textarea id="input" placeholder="描述你要在手机上完成的事…"></textarea>
+      <div class="composerbar">
+        <button class="iconbtn" id="btnAttach" title="附加文本文件" style="width:28px;height:28px;flex-basis:28px;font-size:15px">＋</button>
+        <span class="pill hidden" id="attachPill"></span>
+        <button id="modelPick" title="选择模型">模型</button>
+        <span class="pill" id="enginePill">云端 API</span>
+        <span class="pill" id="memPill">记忆 0</span>
+        <button class="send" id="btnSend">↑</button>
+      </div>
+    </div>
+    <div class="footnote">任务状态会显示在通知栏/悬浮窗；验证码与支付请本人完成</div>
+  </div>
+</div>
+
+<div id="drawer">
+  <div class="drawerpanel">
+    <button class="newbtn" id="btnNew">＋ 新建任务</button>
+    <h3>任务</h3>
+    <div id="sessionList"></div>
+    <div style="border-top:1px solid #22222a;padding-top:12px;color:#6f6f7c;font-size:11px;line-height:1.6">DeepSeek Mobile · ETC<br>本地文件在应用私有目录</div>
+  </div>
+</div>
+
+<div id="settings">
+  <div class="shead"><button class="iconbtn" id="btnCloseSettings">←</button><b>设置</b><div class="spacer"></div><span style="font-size:11px;color:#777784" id="settingsVersion">1.4.0</span></div>
+  <div class="tabs" id="tabs">
+    <button data-tab="model" class="active">模型服务</button>
+    <button data-tab="local">本地 GGUF</button>
+    <button data-tab="runs">任务</button>
+    <button data-tab="terminal">终端</button>
+    <button data-tab="memory">记忆</button>
+    <button data-tab="skills">技能</button>
+    <button data-tab="plugins">插件</button>
+    <button data-tab="qq">QQ 助手</button>
+    <button data-tab="bili">B站</button>
+    <button data-tab="stats">状态</button>
+    <button data-tab="ability">能力</button>
+    <button data-tab="tools">工作目录</button>
+    <button data-tab="about">关于</button>
+  </div>
+  <div id="settingsBody"></div>
+</div>
+
+<div id="modelSheet"><div class="askbox" id="modelSheetBox"></div></div>
+<div id="ask"><div class="askbox" id="askBox"></div></div>
+<div id="processSheet"><div class="pbox"><div class="phead"><button class="pclose" onclick="closeProcess()">×</button><h3>思考过程</h3><span style="width:28px"></span></div><div id="processBody"></div></div></div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+function stateGet(k) {
+  try { const a = android(); if (a && a.stateRead) { const raw = a.stateRead(k); if (raw) return raw; } } catch (e) {}
+  try { return localStorage.getItem(k) || ""; } catch (e) { return ""; }
+}
+function statePut(k, raw) {
+  try { const a = android(); if (a && a.stateWrite) a.stateWrite(k, raw); } catch (e) {}
+  try { localStorage.setItem(k, raw); } catch (e) {}
+}
+const load = (k, d) => {
+  const raw = stateGet(k);
+  if (!raw) return d;
+  try { return JSON.parse(raw); } catch (e) { return d; }
+};
+const save = (k, v) => {
+  let raw;
+  try { raw = JSON.stringify(v); } catch (e) { return; }
+  statePut(k, raw);
+};
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const bytes = (n) => n > 1073741824 ? (n / 1073741824).toFixed(2) + " GB" : n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : n > 1024 ? (n / 1024).toFixed(0) + " KB" : (n || 0) + " B";
+const now = () => Date.now();
+
+const MODES = {
+  lean:  { name: "精简", temp: 0.3, maxTokens: 900,  desc: "少步骤、短回答，先给结论" },
+  fast:  { name: "极速", temp: 0.2, maxTokens: 700,  desc: "最快出结果，不做多余展开" },
+  create:{ name: "创造", temp: 0.9, maxTokens: 3000, desc: "写方案、文案、网页与创意" },
+  model: { name: "建模", temp: 0.4, maxTokens: 3000, desc: "结构建模、代码、表格与流程" }
+};
+const THINK = {
+  off:      { name: "关闭", rounds: 1, tokens: 800,  desc: "只给结果，不展开思考" },
+  simple:   { name: "简单", rounds: 3, tokens: 1600, desc: "短思考，适合日常问答" },
+  advanced: { name: "高级", rounds: 6, tokens: 2400, desc: "默认：计划+工具+验证" },
+  pro:      { name: "Pro",  rounds: 10, tokens: 3200, desc: "复杂任务，多轮工具调用" },
+  max:      { name: "Max",  rounds: 16, tokens: 4096, desc: "长任务/写代码，尽量不提前停" }
+};
+const SKILLS = [
+  { id: "auto", group: "通用", name: "自动", desc: "按任务自己选方法", prompt: "" },
+  { id: "office", group: "办公", name: "办公整理", desc: "总结、清单、邮件、计划", prompt: "你擅长把杂乱信息整理成结论、清单、邮件和可执行计划；先给结果，再给必要依据。" },
+  { id: "doc", group: "办公", name: "正式文书", desc: "报告、通知、方案、公文", prompt: "写正式文书先明确发文对象、目的和语气；结构完整、措辞准确，避免口水话和空泛表态。" },
+  { id: "minutes", group: "办公", name: "会议纪要", desc: "结论、待办、负责人", prompt: "整理会议内容时输出：结论、决定、待办（负责人/时间）、风险和待确认项；不要把讨论过程当结论。" },
+  { id: "sheet", group: "办公", name: "表格处理", desc: "Excel/CSV、公式、统计", prompt: "处理表格先确认字段、口径和缺失值；给公式或步骤时说明每列含义，并提醒备份原文件。" },
+  { id: "slides", group: "办公", name: "演示文稿", desc: "PPT 大纲、页面结构", prompt: "做演示先定受众和结论，再拆成每页一个观点；输出标题、要点、讲述提示，不堆大段文字。" },
+  { id: "data", group: "办公", name: "数据分析", desc: "指标、对比、异常", prompt: "分析数据先定义指标和口径，再给趋势、对比、异常和可能原因；区分事实与推测。" },
+  { id: "research", group: "调研", name: "网页调研", desc: "检索、对比、摘录来源", prompt: "做网页调研时先明确要回答的问题，再用 http_fetch 读取真实页面；区分事实与推测，给出链接或来源。" },
+  { id: "factcheck", group: "调研", name: "事实核查", desc: "查来源、找反证", prompt: "核查说法时先找原始来源和时间，再找独立来源交叉验证；找不到证据就明确说找不到，不要凑结论。" },
+  { id: "writing", group: "写作", name: "写作", desc: "文案、方案、长文", prompt: "写作时先确定读者和目的，再给完整成稿；不要套话，结构清楚，可直接使用。" },
+  { id: "copy", group: "写作", name: "营销文案", desc: "标题、卖点、转化", prompt: "写营销文案先提炼目标人群、核心卖点和行动理由；给多个标题/短文案备选，避免夸大和虚假承诺。" },
+  { id: "code", group: "开发", name: "代码修改", desc: "定位、修改、验证", prompt: "处理代码任务时先定位文件和调用链，再给最小改动；写完代码要说明如何运行和验证，不要只给片段。" },
+  { id: "debug", group: "开发", name: "排错调试", desc: "复现、日志、根因", prompt: "排错先复现并读完整报错/日志，再按最近改动和依赖逐层缩小范围；给验证步骤，不要凭感觉改。" },
+  { id: "android", group: "开发", name: "Android", desc: "Gradle、NDK、ABI、WebView", prompt: "处理 Android 任务时先确认 minSdk、targetSdk、ABI 和构建方式；改完要能打包并说明安装验证点。" },
+  { id: "frontend", group: "开发", name: "前端网页", desc: "HTML/CSS/JS、响应式", prompt: "做网页先确认尺寸和交互，再给可运行 HTML/CSS/JS；优先可用、清晰、移动端不溢出。" },
+  { id: "backend", group: "开发", name: "后端接口", desc: "API、数据、错误处理", prompt: "写接口先定义请求/响应、状态码和错误格式；注意鉴权、输入校验和并发边界。" },
+  { id: "git", group: "开发", name: "Git/GitHub", desc: "提交、分支、Release", prompt: "处理 Git 任务先看 status/diff/log，避免覆盖用户改动；提交信息说清改了什么，发布前检查构建和签名。" },
+  { id: "files", group: "工具", name: "本地文件", desc: "读写工作目录", prompt: "文件任务优先使用工作目录工具；写文件前确认路径和内容，读大文件只摘取相关部分。" },
+  { id: "translate", group: "工具", name: "翻译润色", desc: "中英互译、语气", prompt: "翻译先保留原意和专有名词，再按目标语言习惯调整；不确定的词给备选，不要擅自扩写。" },
+  { id: "study", group: "学习", name: "学习讲解", desc: "由浅入深、例子", prompt: "讲解概念先给一句话定义，再给例子、常见误区和练习；根据对方水平调整深度。" },
+  { id: "plan", group: "学习", name: "计划管理", desc: "拆解、优先级、复盘", prompt: "做计划先明确目标、截止时间和可用资源，再拆里程碑和下一步；给优先级和风险。" },
+  { id: "creative", group: "创意", name: "创意策划", desc: "点子、脚本、分镜", prompt: "做创意先定主题、受众和限制，再给多个方向；每个方向说明画面/节奏/执行成本。" },
+  { id: "life", group: "生活", name: "生活助手", desc: "出行、健康、日常", prompt: "生活问题先确认时间、地点和限制；给可执行方案和备选，涉及医疗/法律/金融时提醒找专业人士。" },
+  { id: "security", group: "安全", name: "安全隐私", desc: "权限、密钥、风险", prompt: "安全任务先识别资产、权限和数据流；给最小权限和可逆操作，密钥不要写入日志或公开文件。" },
+  { id: "memory", group: "工具", name: "记忆管理", desc: "记住偏好、项目背景", prompt: "值得长期保留的偏好、项目名、路径用 memory_save；一次性内容不要写入长期记忆。" },
+  { id: "pdfdoc", group: "办公", name: "PDF/文档", desc: "PDF、Word、长文提取", prompt: "处理 PDF/Word 先确认页数、版式和是否需要保留原格式；提取内容要标明页码/章节，改写时不要丢关键条款。" },
+  { id: "image", group: "创作", name: "图像处理", desc: "生图、修图、识图", prompt: "图像任务先确认用途、尺寸、风格和是否需要透明底；生成后检查主体、文字和比例，不要把参考图特征说错。" },
+  { id: "video", group: "创作", name: "视频创作", desc: "脚本、分镜、剪辑", prompt: "视频任务先定时长、平台、受众和核心信息；给脚本/分镜/镜头节奏，剪辑建议要具体到时间点和转场。" },
+  { id: "browser", group: "工具", name: "浏览器操作", desc: "网页点击、搜索、填表", prompt: "操作网页先用 screen_read 找到真实控件再点击；不要猜坐标，遇到登录/验证码/支付让用户本人完成。" },
+  { id: "terminal", group: "开发", name: "终端构建", desc: "shell、编译、打包", prompt: "终端任务先确认工作目录和命令风险；执行前说明会改什么，构建/打包后检查产物路径和退出码。" },
+  { id: "api", group: "开发", name: "API 调试", desc: "HTTP、鉴权、错误码", prompt: "调试 API 先看请求方法、URL、头、体和服务端状态；区分网络/鉴权/参数/业务错误，不要只贴一段报错。" },
+  { id: "db", group: "开发", name: "数据库", desc: "SQL、表结构、迁移", prompt: "数据库任务先确认引擎、表结构和数据量；给 SQL 时说明字段、索引和事务边界，破坏性操作先备份并确认。" },
+  { id: "mobileops", group: "工具", name: "手机操作", desc: "无障碍、App、通知", prompt: "手机任务先确认 App 名称、当前页面和目标；用 screen_find/screen_tap_text 逐步操作，每步读屏确认，不要连续盲点。" },
+  { id: "qa", group: "开发", name: "测试验收", desc: "用例、回归、证据", prompt: "测试任务先列验收点和风险用例，再执行并记录证据；区分通过、失败、阻塞，不要把没验证的说成通过。" }
+];
+const DEFAULT_SETTINGS = {
+  mode: "cloud", baseUrl: "", apiKey: "", model: "", temperature: 0.6, maxTokens: 2048,
+  localPath: "", localName: "", localCtx: 2048, localThreads: 4, localLoaded: false, localLoading: false,
+  localError: "", autoLoadLocal: true, localUnlimited: true, workMode: "lean", thinkLevel: "advanced", workspaceName: "", workspaceUri: "", terminalCwd: "",
+  skillId: "auto", skillIds: ["auto"], customSkills: [],
+  imageUrl: "", imageKey: "", imageModel: "",
+  qqPersona: "简洁、可靠，先给结论，再给必要步骤",
+  qqEnabled: false, qqEndpoint: "http://127.0.0.1:3001", qqToken: "", qqAllow: "", qqSelfId: "", qqStatus: "未启动",
+  mcpUrl: "", mcpToken: "", mcpTools: []
+};
+let settings = Object.assign({}, DEFAULT_SETTINGS, load("etc.settings", {}));
+settings.localLoading = false;
+if (!Array.isArray(settings.mcpServers)) {
+  if (settings.mcpUrl) {
+    settings.mcpServers = [{ id: "default", url: settings.mcpUrl, token: settings.mcpToken || "", tools: Array.isArray(settings.mcpTools) ? settings.mcpTools : [] }];
+  } else settings.mcpServers = [];
+}
+if (!Array.isArray(settings.customSkills)) settings.customSkills = [];
+if (!Array.isArray(settings.skillIds)) settings.skillIds = settings.skillId ? [settings.skillId] : ["auto"];
+settings.skillIds = settings.skillIds.filter(id => typeof id === "string" && id);
+if (!settings.skillIds.length) settings.skillIds = ["auto"];
+settings.skillId = settings.skillIds[0];
+try {
+  if (!settings.localPath) {
+    const a = typeof Android !== "undefined" ? Android : null;
+    if (a && a.lastModel) {
+      const m = JSON.parse(a.lastModel() || "{}");
+      if (m.path) { settings.localPath = m.path; settings.localName = m.name || "本地模型"; }
+    }
+  }
+} catch (e) {}
+let sessions = load("etc.sessions", []);
+if (!Array.isArray(sessions)) sessions = [];
+sessions = sessions.filter(s => s && s.id && Array.isArray(s.messages));
+for (const s of sessions) for (const m of s.messages) if (!m || typeof m !== "object") s.messages = s.messages.filter(x => x && typeof x === "object");
+let memories = load("etc.memory", []);
+if (!Array.isArray(memories)) memories = [];
+let runs = load("etc.runs", []);
+if (!Array.isArray(runs)) runs = [];
+for (const r of runs) if (r && r.status === "running") { r.status = "interrupted"; r.detail = "上次运行被中断"; r.end = r.end || now(); }
+let activeRun = null;
+let current = null;
+let busy = false;
+let stopRequested = false;
+let pendingHttp = {};
+let pendingLocal = {};
+let pendingAttach = null;
+let currentTab = "model";
+let skillQuery = "";
+
+if (!sessions.length) { newSession(false); }
+current = sessions.find(s => s.id === load("etc.last", "")) || sessions[0];
+if (!current) { newSession(false); }
+save("etc.last", current.id);
+
+function compactSessions() {
+  if (!Array.isArray(sessions)) { sessions = []; return; }
+  if (sessions.length > 60) sessions = sessions.slice(0, 60);
+  for (const s of sessions) {
+    if (!Array.isArray(s.messages)) s.messages = [];
+    if (s.messages.length > 220) s.messages = s.messages.slice(-220);
+    for (const m of s.messages) {
+      if (typeof m.content !== "string") m.content = String(m.content || "");
+      if (typeof m.modelContent === "string" && m.modelContent.length > 600000) m.modelContent = m.modelContent.slice(-600000);
+      if (typeof m.content === "string" && m.content.length > 600000) m.content = m.content.slice(0, 600000) + "…";
+    }
+  }
+  if (settings.customSkills && settings.customSkills.length > 40) settings.customSkills = settings.customSkills.slice(0, 40);
+}
+function persist() { compactSessions(); save("etc.settings", settings); save("etc.sessions", sessions); save("etc.memory", memories); save("etc.last", current ? current.id : ""); persistRuns(); }
+function persistRuns() { if (runs.length > 60) runs = runs.slice(0, 60); save("etc.runs", runs); }
+function nativeTask(state, title, detail) {
+  try { const a = android(); if (a && a.taskStatus) a.taskStatus(state || "", title || "", detail || ""); } catch (e) {}
+}
+function startRun(text) {
+  const r = { id: "r_" + uid(), title: String(text || "任务").slice(0, 80), start: now(), end: 0, status: "running", detail: "正在准备", steps: [], result: "" };
+  runs.unshift(r); activeRun = r; persistRuns(); updateTop(); if ($("#settings") && $("#settings").classList.contains("show")) renderSettings(); nativeTask("running", r.title, "正在准备");
+  addWorkLog("收到任务，开始分析");
+  return r;
+}
+function updateRun(detail, status) {
+  if (!activeRun) return;
+  const next = detail || activeRun.detail;
+  const changed = next && next !== activeRun.detail;
+  activeRun.status = status || "running"; activeRun.detail = next;
+  if (changed && activeRun.steps[activeRun.steps.length - 1] !== next) activeRun.steps.push(next.slice(0, 160));
+  persistRuns(); updateTop(); if ($("#settings") && $("#settings").classList.contains("show")) renderSettings(); nativeTask(activeRun.status, activeRun.title, activeRun.detail);
+  if (changed) addWorkLog(next, status === "error" ? "error" : "run");
+}
+function finishRun(status, result) {
+  if (!activeRun) return;
+  activeRun.status = status || "done"; activeRun.end = now(); activeRun.detail = status === "error" ? "执行失败" : "已完成";
+  activeRun.result = String(result || "").slice(0, 4000); persistRuns();
+  nativeTask(activeRun.status, activeRun.title, activeRun.status === "error" ? "执行失败" : (activeRun.status === "stopped" ? "已结束" : "已完成"));
+  addWorkLog(activeRun.status === "error" ? "任务失败，已停止" : (activeRun.status === "stopped" ? "任务已由用户结束" : "任务完成"), activeRun.status === "error" ? "error" : (activeRun.status === "stopped" ? "stop" : "done"));
+  activeRun = null; updateTop(); if ($("#settings") && $("#settings").classList.contains("show")) renderSettings();
+}
+function toast(t) { const el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 2200); }
+let chatFrame = 0;
+function scheduleChatRender() { if (chatFrame) return; chatFrame = requestAnimationFrame(() => { chatFrame = 0; renderChat(); }); }
+let persistTimer = 0;
+function persistSoon() { if (persistTimer) return; persistTimer = setTimeout(() => { persistTimer = 0; persist(); }, 220); }
+function android() { return typeof Android !== "undefined" ? Android : null; }
+function modeName() {
+  if (settings.mode === "local") return settings.localLoading ? "本地 · 加载中…" : (settings.localLoaded ? ("本地 · " + (settings.localName || "GGUF")) : "本地未加载");
+  return settings.model ? ("云端 · " + settings.model) : "未配置模型";
+}
+function modeOf() { return MODES[settings.workMode] || MODES.lean; }
+function thinkCfg() { return THINK[settings.thinkLevel] || THINK.advanced; }
+function updateTop() {
+  const logo = $("#logo");
+  if (logo) { const a = avatarFor(); const m = a.match(/color:(#[0-9a-f]+);background:(#[0-9a-f]+);border-color:(#[0-9a-f]+)" title="[^"]*">([^<]+)/i); if (m) { logo.style.color = m[1]; logo.style.background = m[2]; logo.style.borderColor = m[3]; logo.textContent = m[4]; } }
+  $("#modeChip").textContent = modeName();
+  const mp = $("#modelPick"); if (mp) mp.textContent = settings.mode === "local" ? ("本地 " + (settings.localName || "模型")) : ("云端 " + (settings.model || "未配置"));
+  const tc = $("#taskChip"); if (tc) { tc.classList.toggle("hidden", !activeRun); tc.textContent = activeRun ? (activeRun.status === "error" ? "任务失败" : "工作中") : ""; }
+  const md = modeOf();
+  $("#enginePill").textContent = md.name + " · " + (settings.mode === "local" ? "本地" : "云端");
+  $("#enginePill").className = "pill" + (settings.mode === "local" && !settings.localLoaded && !settings.localLoading ? " warn" : "");
+  $("#memPill").textContent = "记忆 " + memories.length;
+  document.querySelectorAll("#modeTabs button").forEach(b => b.classList.toggle("active", b.dataset.mode === settings.workMode));
+  const name = settings.workspaceName || (settings.workspaceUri ? "已选择目录" : "未选择");
+  $("#wsBar").innerHTML = "📁 工作目录 <b>" + esc(name) + "</b><span>" + (settings.workspaceUri ? "更换 ›" : "选择 ›") + "</span>";
+  $("#settingsVersion").textContent = (android() ? android().appVersion() : "2.0.0");
+}
+
+function modelSheetHtml() {
+  const local = settings.localPath ? `本地 · ${esc(settings.localName || "GGUF")}（${settings.localLoaded ? "已加载" : "未加载"}）` : "本地 GGUF（未选择模型）";
+  const cloud = settings.model ? `云端 · ${esc(settings.model)}` : "云端 API（未配置）";
+  return `<h3>选择模型</h3><p>切换当前任务使用的模型；本地模型不需要登录。</p>
+    <button data-model="local">${local}</button>
+    <button data-model="cloud">${cloud}</button>
+    <button data-model="settings" class="cancel" style="color:#cdeed9">打开模型设置</button>
+    <button data-model="close" class="cancel">取消</button>`;
+}
+function openModelSheet() {
+  const box = $("#modelSheetBox"); box.innerHTML = modelSheetHtml();
+  $("#modelSheet").classList.add("show");
+  box.querySelectorAll("[data-model]").forEach(b => b.onclick = () => {
+    const v = b.dataset.model;
+    if (v === "close") { $("#modelSheet").classList.remove("show"); return; }
+    if (v === "settings") { $("#modelSheet").classList.remove("show"); openSettings("model"); return; }
+    if (v === "local") { settings.mode = "local"; persist(); updateTop(); $("#modelSheet").classList.remove("show"); if (!settings.localLoaded) setTimeout(maybeAutoLoadLocal, 150); toast("已切换到本地模型"); return; }
+    if (v === "cloud") { settings.mode = "cloud"; persist(); updateTop(); $("#modelSheet").classList.remove("show"); toast("已切换到云端模型"); return; }
+  });
+}
+function closeModelSheet() { $("#modelSheet").classList.remove("show"); }
+
+// ---------- QQ 助手（OneBot v11 网关） ----------
+let qqSocket = null, qqReconnect = null, qqManual = false, qqBusy = false;
+function qqStatus(text, selfId) {
+  settings.qqStatus = text || settings.qqStatus || "未启动";
+  if (selfId != null) settings.qqSelfId = String(selfId || "");
+  persist();
+  const el = $("#qqStatus"); if (el) el.textContent = settings.qqStatus;
+  const se = $("#qqSelf"); if (se) se.textContent = settings.qqSelfId || "未获取";
+  updateTop();
+}
+function qqPersonaRead() {
+  const el = $("#qqPersona");
+  if (el && el.value.trim()) settings.qqPersona = el.value.trim();
+  return settings.qqPersona || "";
+}
+function qqBase() {
+  const el = $("#qqEndpoint");
+  if (el && el.value.trim()) settings.qqEndpoint = el.value.trim();
+  return String(settings.qqEndpoint || "").trim().replace(/\/+$/, "");
+}
+function qqToken() {
+  const el = $("#qqToken");
+  if (el && el.value.trim()) settings.qqToken = el.value.trim();
+  return String(settings.qqToken || "").trim();
+}
+function qqWsUrl() {
+  const base = qqBase();
+  if (!base) return "";
+  let ws = base.replace(/^http/i, "ws").replace(/\/+$/, "");
+  const token = qqToken();
+  return ws + (token ? (ws.includes("?") ? "&" : "?") + "access_token=" + encodeURIComponent(token) : "");
+}
+async function qqApi(path, body) {
+  const base = qqBase();
+  if (!base) throw new Error("先填 OneBot HTTP 地址");
+  const headers = { "Content-Type": "application/json" };
+  if (qqToken()) headers["Authorization"] = "Bearer " + qqToken();
+  const r = await http("POST", base + path, headers, JSON.stringify(body || {}));
+  if (r.status === 0) throw new Error(r.error || "连不上 OneBot 网关");
+  if (r.status >= 400) throw new Error("OneBot HTTP " + r.status + "：" + (r.body || "").slice(0, 200));
+  let data; try { data = JSON.parse(r.body || "{}"); } catch (e) { throw new Error("OneBot 返回不是 JSON"); }
+  if (data.retcode != null && data.retcode !== 0) throw new Error(data.message || data.wording || ("OneBot 错误码 " + data.retcode));
+  return data;
+}
+async function qqTest() {
+  try {
+    const info = await qqApi("/get_login_info", {});
+    const d = info.data || {};
+    settings.qqSelfId = String(d.user_id || "");
+    qqStatus("网关正常" + (d.nickname ? " · " + d.nickname : ""), settings.qqSelfId);
+    toast("QQ 网关已连接" + (d.nickname ? "：" + d.nickname : ""));
+  } catch (e) { qqStatus("测试失败：" + e.message); toast("测试失败：" + e.message); }
+}
+async function qqStart() {
+  qqPersonaRead();
+  const base = qqBase();
+  if (!base) { toast("先填 OneBot HTTP 地址"); return; }
+  qqManual = false; settings.qqEnabled = true; qqStatus("连接中…"); persist();
+  try { if (qqSocket) qqSocket.close(); } catch (e) {}
+  try {
+    const ws = new WebSocket(qqWsUrl());
+    qqSocket = ws;
+    ws.onopen = async () => {
+      qqStatus("在线，等待 QQ 消息…");
+      try { const info = await qqApi("/get_login_info", {}); settings.qqSelfId = String((info.data || {}).user_id || ""); persist(); } catch (e) {}
+    };
+    ws.onmessage = (ev) => {
+      let data; try { data = JSON.parse(ev.data); } catch (e) { return; }
+      if (data && data.post_type === "message") qqOnMessage(data).catch(() => {});
+    };
+    ws.onerror = () => qqStatus("网关连接错误，检查地址/Token");
+    ws.onclose = () => {
+      qqSocket = null;
+      if (qqManual || !settings.qqEnabled) { qqStatus("已停止"); return; }
+      qqStatus("连接断开，5 秒后重连…");
+      clearTimeout(qqReconnect);
+      qqReconnect = setTimeout(() => { if (settings.qqEnabled) qqStart(); }, 5000);
+    };
+  } catch (e) { qqStatus("启动失败：" + e.message); toast("QQ 启动失败：" + e.message); }
+}
+function qqStop() {
+  qqManual = true; settings.qqEnabled = false; persist();
+  clearTimeout(qqReconnect); qqReconnect = null;
+  try { if (qqSocket) qqSocket.close(); } catch (e) {}
+  qqSocket = null; qqStatus("已停止");
+  toast("QQ 助手已停止");
+}
+async function qqSend(userId, text) {
+  const body = { user_id: Number(userId), message: String(text || "").slice(0, 3000), auto_escape: true };
+  await qqApi("/send_private_msg", body);
+}
+async function qqOnMessage(ev) {
+  if (!settings.qqEnabled || ev.message_type !== "private") return;
+  qqPersonaRead();
+  const userId = String(ev.user_id || "");
+  if (!userId || userId === String(settings.qqSelfId || "")) return;
+  const allow = String(settings.qqAllow || "").split(/[,，\s]+/).filter(Boolean);
+  if (allow.length && !allow.includes(userId)) return;
+  const text = String(ev.raw_message || ev.message || "").replace(/\[CQ:[^\]]+\]/g, "").trim();
+  if (!text) return;
+  if (qqBusy || busy) { try { await qqSend(userId, "我正在处理另一个任务，稍后回复你。"); } catch (e) {} return; }
+  qqBusy = true;
+  const title = "QQ " + userId;
+  let sess = sessions.find(s => s.title === title);
+  if (!sess) { sess = { id: uid(), title, messages: [], created: now(), updated: now() }; sessions.unshift(sess); }
+  const oldCurrent = current, oldBusy = busy, oldStop = stopRequested;
+  current = sess; busy = true; stopRequested = false;
+  setBusyUI(true);
+  sess.messages.push({ role: "user", content: text });
+  persist();
+  const run = startRun(text);
+  let answer = "";
+  try {
+    const result = settings.mode === "local" ? await runLocal(text) : await runCloud(text);
+    answer = result.text || "（没有返回内容）";
+    const qqProcess = sess.messages.slice(-30).filter(m => m.role === "work");
+    sess.messages.push({ role: "assistant", content: answer, tools: result.tools || [], process: qqProcess });
+    finishRun("done", answer);
+  } catch (e) {
+    answer = "执行失败：" + e.message;
+    sess.messages.push({ role: "assistant", content: answer });
+    finishRun("error", e.message);
+  } finally {
+    sess.updated = now(); persist();
+    current = oldCurrent; busy = oldBusy; stopRequested = oldStop;
+    setBusyUI(busy); activeRun = null;
+    renderSessions();
+    if (current === sess) renderChat();
+  }
+  try { await qqSend(userId, answer); } catch (e) { qqStatus("回复失败：" + e.message); }
+  qqBusy = false;
+}
+
+function newSession(render = true) {
+  const s = { id: uid(), title: "新任务", messages: [], created: now(), updated: now() };
+  sessions.unshift(s); current = s; persist();
+  if (render) { renderSessions(); renderChat(); closeDrawer(); }
+  return s;
+}
+function openSession(id) { current = sessions.find(s => s.id === id) || current; save("etc.last", current.id); renderSessions(); renderChat(); closeDrawer(); }
+function deleteSession(id) {
+  sessions = sessions.filter(s => s.id !== id);
+  if (!sessions.length) newSession(false);
+  if (!sessions.find(s => s.id === current.id)) current = sessions[0];
+  persist(); renderSessions(); renderChat();
+}
+
+function renderSessions() {
+  if (!Array.isArray(sessions)) sessions = [];
+  $("#sessionList").innerHTML = sessions.map(s => `<div class="sess ${s.id === current.id ? "active" : ""}" data-id="${s.id}"><span>${esc(s.title)}</span><i data-del="${s.id}">×</i></div>`).join("");
+}
+const PROC_CACHE = {};
+function currentModelKey() { return settings.mode === "local" ? ("local:" + (settings.localName || "GGUF")) : ("cloud:" + (settings.model || "未配置")); }
+function avatarFor(key) {
+  const raw = String(key || currentModelKey());
+  const low = raw.toLowerCase();
+  let letter = "A", color = "#9be7b4", bg = "#0b0f0c", border = "#24352a";
+  if (low.includes("local") || low.includes("gguf") || low.includes("llama") || low.includes("qwen")) { letter = "L"; color = "#9be7b4"; bg = "#0b1710"; border = "#2b5138"; }
+  else if (low.includes("deepseek")) { letter = "D"; color = "#7cc7ff"; bg = "#0b1420"; border = "#244a6a"; }
+  else if (low.includes("gpt") || low.includes("openai")) { letter = "G"; color = "#ffd38a"; bg = "#1b160a"; border = "#5a451d"; }
+  else if (low.includes("claude")) { letter = "C"; color = "#ffb3a7"; bg = "#1b0f0d"; border = "#5a2b24"; }
+  else if (low.includes("gemini")) { letter = "G"; color = "#b9a7ff"; bg = "#141026"; border = "#3d2f73"; }
+  else if (low.includes("kimi")) { letter = "K"; color = "#a7d9ff"; bg = "#0b1520"; border = "#244a6a"; }
+  else if (low.includes("glm") || low.includes("chatglm")) { letter = "Z"; color = "#ffc78a"; bg = "#1b130a"; border = "#5a3d1d"; }
+  else if (raw.trim()) { letter = raw.trim().charAt(0).toUpperCase(); }
+  return `<div class="avatar" style="color:${color};background:${bg};border-color:${border}" title="${esc(raw)}">${esc(letter)}</div>`;
+}
+function fmtDuration(ms) {
+  const sec = Math.max(0, Math.round(Number(ms || 0) / 1000));
+  if (sec < 60) return sec + " 秒";
+  return Math.floor(sec / 60) + " 分 " + (sec % 60) + " 秒";
+}
+function openProcess(pid) {
+  const data = PROC_CACHE[pid];
+  if (!data) { toast("这条消息没有工作过程记录"); return; }
+  const steps = data.process || [];
+  $("#processBody").innerHTML = `<div style="color:#8d8d99;font-size:11px;margin:0 0 8px">共耗时 ${fmtDuration(data.duration)} · ${steps.length} 步</div>` +
+    (steps.length ? steps.map(p => `<details class="prow"><summary><div class="ptop"><div class="picon">${p.kind === "think" ? "T" : (p.kind === "error" ? "!" : "›_")}</div><div class="ptitle">${esc(String(p.content || "").slice(0, 96))}${String(p.content || "").length > 96 ? "…" : ""}</div><div class="ptime">${esc(p.time || "")}</div></div></summary><div class="pdetail">${esc(p.content || "")}</div></details>`).join("") : `<div class="note">没有步骤记录</div>`);
+  $("#processSheet").classList.add("show");
+}
+function closeProcess() { $("#processSheet").classList.remove("show"); }
+function renderChat() {
+  const chat = $("#chat");
+  if (!current) { if (!sessions.length) newSession(false); current = sessions[0]; }
+  if (!current) return;
+  if (!Array.isArray(current.messages)) current.messages = [];
+  if (!current.messages.length) {
+    chat.innerHTML = `<div class="empty"><div class="orb">A</div><h1>今天要完成什么？</h1>
+      <p>这是手机独立版：云端填自己的 API，或加载本地 GGUF。它不连电脑，数据留在手机。</p>
+      <div class="quick"><button data-q="整理我手机里的一段文字"><b>整理文字</b><small>改写、总结、翻译</small></button><button data-q="打开 https://example.com 看看"><b>打开网页</b><small>读取真实页面</small></button><button data-q="帮我写一个今天的工作计划"><b>写计划</b><small>拆步骤、排优先级</small></button><button data-q="记住：我常用端口是 8787"><b>记一件事</b><small>长期记忆</small></button></div></div>`;
+  } else {
+    const visible = current.messages.slice(-160);
+    chat.innerHTML = visible.map(m => {
+      if (m.role === "work") {
+        const kind = m.kind || "run";
+        return `<div class="worklog ${esc(kind)}"><span class="wdot"></span><div class="wtext">${esc(m.content)}</div><span class="wtime">${esc(m.time || "")}</span></div>`;
+      }
+      const tools = (m.tools || []).map(t => `<div class="tool"><b>${esc(t.name)}</b><span>${esc(t.detail || "")}</span></div>`).join("");
+      if (m.role === "user") return `<div class="msg user"><div class="bubble">${esc(m.content)}</div></div>`;
+      const pid = m.pid || (m.pid = "p_" + uid());
+      if (Array.isArray(m.process) && m.process.length) PROC_CACHE[pid] = { process: m.process, duration: m.duration || 0 };
+      const runHead = (m.process && m.process.length) || m.duration ? `<button class="runhead" onclick="openProcess('${pid}')"><span>工作过程</span><b class="dur">共耗时 ${fmtDuration(m.duration || 0)}</b><span>⌄</span></button>` : "";
+      return `<div class="msg assistant">${avatarFor(m.modelKey)}<div class="msgbody">${runHead}<div class="bubble">${esc(m.content)}</div>${tools ? `<div class="tools">${tools}</div>` : ""}</div></div>`;
+    }).join("");
+  }
+  if (busy) chat.insertAdjacentHTML("beforeend", `<div class="msg assistant">${avatarFor()}<div class="msgbody"><div class="bubble"><span class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span> <span id="statusText">处理中…</span></span></div></div>`);
+  chat.scrollTop = chat.scrollHeight;
+}
+function addWorkLog(content, kind) {
+  if (!current) return;
+  const text = String(content || "").trim();
+  if (!text) return;
+  const last = current.messages[current.messages.length - 1];
+  if (last && last.role === "work" && last.content === text) return;
+  current.messages.push({ role: "work", content: text, kind: kind || "run", time: new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"}) });
+  current.updated = now(); persistSoon(); scheduleChatRender();
+}
+function addMsg(role, content, tools, modelContent, process, duration) {
+  current.messages.push({ role, content, tools: tools || [], modelContent: modelContent || null, process: Array.isArray(process) ? process : [], duration: Number(duration || 0), modelKey: currentModelKey() });
+  current.updated = now();
+  if (current.title === "新任务" && role === "user") current.title = content.slice(0, 18) || "新任务";
+  persist(); renderSessions(); renderChat();
+}
+
+// ---------- text file / skill picker ----------
+function pickText(id) {
+  const a = android();
+  if (!a) { toast("不在 Android 环境"); return; }
+  a.pickTextFile(id);
+}
+window.__textPicked = function (id, name, text, err) {
+  if (id === "attach") {
+    if (err) { toast(err); return; }
+    pendingAttach = { name: name || "附件.txt", text: text || "" };
+    const pill = $("#attachPill");
+    pill.textContent = "📎 " + pendingAttach.name;
+    pill.classList.remove("hidden");
+    toast("已附加 " + pendingAttach.name);
+    return;
+  }
+  if (id === "skill") {
+    if (err) { toast(err); return; }
+    const clean = String(text || "").replace(/^---[\s\S]*?---\s*/, "");
+    const title = (clean.match(/^#\s+(.+)$/m) || [])[1] || (name || "导入技能").replace(/\.md$/i, "");
+    const prompt = clean.slice(0, 8000).trim();
+    if (!prompt) { toast("技能内容为空"); return; }
+    const skill = { id: "custom_" + uid(), name: title.slice(0, 30), desc: "导入的技能", prompt: prompt };
+    settings.customSkills = settings.customSkills || [];
+    settings.customSkills.push(skill);
+    if (!Array.isArray(settings.skillIds)) settings.skillIds = [];
+    settings.skillIds.push(skill.id);
+    settings.skillId = settings.skillIds[0];
+    persist(); updateTop(); renderSettings(); toast("技能已导入并启用");
+  }
+};
+
+// ---------- HTTP bridge ----------
+function http(method, url, headers, body) {
+  return new Promise((resolve) => {
+    const a = android();
+    if (!a) { resolve({ status: 0, body: "", error: "不在 Android 环境" }); return; }
+    const id = uid();
+    pendingHttp[id] = resolve;
+    a.httpStart(id, method, url, JSON.stringify(headers || {}), body == null ? "" : body);
+  });
+}
+window.__httpResult = function (id, json) {
+  const cb = pendingHttp[id]; if (!cb) return; delete pendingHttp[id];
+  try { cb(JSON.parse(json)); } catch (e) { cb({ status: 0, body: "", error: String(e) }); }
+};
+window.__modelPicked = function (id, name, path, size, err) {
+  if (err) { toast("导入失败：" + err); return; }
+  try { if (android() && android().rememberModel) android().rememberModel(path, name); } catch (e) {}
+  settings.localName = name; settings.localPath = path; settings.localLoaded = false; settings.localError = ""; settings.mode = "local"; persist(); updateTop(); renderSettings();
+  toast("模型已导入：" + name + " · " + bytes(size) + "，正在自动加载");
+  setTimeout(maybeAutoLoadLocal, 200);
+};
+window.__localStatus = function (id, ok, err, info) {
+  settings.localLoading = false;
+  settings.localLoaded = !!ok;
+  settings.localInfo = info || "";
+  settings.localError = ok ? "" : (err || "未知错误");
+  persist(); updateTop(); renderSettings();
+  if (!ok) toast("加载失败：" + settings.localError);
+  else toast("本地模型已加载");
+};
+window.__localInfo = function (id, info) { settings.localInfo = info || ""; persist(); renderSettings(); };
+window.__localReply = function (id, text, err) {
+  const cb = pendingLocal[id]; if (!cb) return; delete pendingLocal[id];
+  cb({ text: text || "", error: err || "" });
+};
+window.__workspacePicked = function (id, name, uri, err) {
+  if (err) { toast("目录选择失败：" + err); return; }
+  settings.workspaceName = name || "已选择目录"; settings.workspaceUri = uri || "";
+  persist(); updateTop(); renderSettings(); toast("工作目录：" + settings.workspaceName);
+};
+function pickWorkspace() {
+  const a = android();
+  if (!a) { toast("不在 Android 环境"); return; }
+  a.pickWorkspace("ws");
+}
+function maybeAutoLoadLocal(force) {
+  if (settings.autoLoadLocal === false && !force) return;
+  if (!settings.localPath || settings.localLoading) return;
+  if (!android()) return;
+  try {
+    if (android().localReady && android().localReady()) {
+      settings.localLoaded = true; settings.localLoading = false; updateTop(); return;
+    }
+  } catch (e) {}
+  settings.localLoaded = false;
+  settings.localLoading = true;
+  updateTop();
+  toast("正在自动加载本地模型…");
+  setTimeout(() => loadLocal(true), 350);
+}
+
+// ---------- local model ----------
+function loadLocal(fromAuto) {
+  if (!settings.localPath) { toast("先选择 .gguf 模型"); return; }
+  const a = android(); if (!a) { toast("不在 Android 环境"); return; }
+  if (settings.localLoading && !fromAuto) { toast("模型正在加载，请稍候"); return; }
+  settings.localLoading = true; settings.localError = ""; persist(); updateTop(); renderSettings();
+  a.loadLocal("load", settings.localPath, Number(settings.localCtx) || 2048, Number(settings.localThreads) || 4);
+}
+function localChat(roles, contents, maxTokens) {
+  return new Promise((resolve) => {
+    const a = android(); if (!a) { resolve({ text: "", error: "不在 Android 环境" }); return; }
+    const id = uid(); pendingLocal[id] = resolve;
+    a.localChat(id, JSON.stringify(roles), JSON.stringify(contents), maxTokens || settings.maxTokens, settings.temperature, 0.9, 40);
+  });
+}
+
+// ---------- memory ----------
+const HL = [0, 0.7, 2, 7, 30, 120];
+function memStrength(m) {
+  const base = m.lastRecallAt || m.createdAt || now();
+  const days = (now() - base) / 86400000;
+  return Math.pow(0.5, days / HL[Math.min(5, Math.max(1, m.importance || 3))]);
+}
+function memSave(text, importance) {
+  text = String(text || "").trim().replace(/^(请)?记住[：:，,]?\s*/, "").replace(/^记一下[：:，,]?\s*/, "");
+  if (!text) return "";
+  const exist = memories.find(m => m.text === text);
+  if (exist) { exist.lastRecallAt = now(); exist.recallCount = (exist.recallCount || 0) + 1; return exist.id; }
+  const m = { id: "m_" + uid(), text: text.slice(0, 800), importance: Math.min(5, Math.max(1, Number(importance) || 3)), createdAt: now(), lastRecallAt: now(), recallCount: 0 };
+  memories.unshift(m); persist(); updateTop(); renderSettings(); return m.id;
+}
+function memSearch(q, limit) {
+  const words = String(q || "").toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(w => w.length > 1);
+  return memories.map(m => {
+    const t = m.text.toLowerCase(); let score = memStrength(m) * (0.6 + 0.08 * (m.importance || 3));
+    if (words.length) { let hits = 0; for (const w of words) if (t.includes(w)) hits++; score += hits * 0.6; }
+    return { m, score };
+  }).sort((a, b) => b.score - a.score).slice(0, limit || 8).map(x => { x.m.lastRecallAt = now(); x.m.recallCount = (x.m.recallCount || 0) + 1; return x.m; });
+}
+function memContext(q) {
+  const hit = memSearch(q, 4).filter(m => memStrength(m) > 0.25);
+  if (!hit.length) return "";
+  return "\n\n[长期记忆，可能有用，未必完全准确]\n" + hit.map(m => "- " + m.text).join("\n");
+}
+function observeMemory(text) {
+  if (/^(我叫|我的名字|我喜欢|我的.*是|记住|记一下)/.test(String(text).trim())) memSave(text, 3);
+}
+
+// ---------- MCP plugins (remote HTTP) ----------
+function mcpServers() {
+  if (!Array.isArray(settings.mcpServers)) settings.mcpServers = [];
+  if (!settings.mcpServers.length && settings.mcpUrl) {
+    settings.mcpServers = [{ id: "default", url: settings.mcpUrl, token: settings.mcpToken || "", name: settings.mcpUrl, tools: Array.isArray(settings.mcpTools) ? settings.mcpTools : [] }];
+  }
+  return settings.mcpServers;
+}
+function mcpAllTools() {
+  return mcpServers().flatMap(srv => (srv.tools || []).map(t => Object.assign({}, t, { serverId: srv.id, serverUrl: srv.url, serverName: srv.name || srv.url })));
+}
+function mcpHeaders(server) {
+  const h = { "Content-Type": "application/json", "Accept": "application/json, text/event-stream" };
+  const token = server ? server.token : settings.mcpToken;
+  if (token) h["Authorization"] = "Bearer " + token;
+  return h;
+}
+function mcpParse(body) {
+  const t = String(body || "").trim();
+  if (!t) throw new Error("MCP 没有返回内容");
+  try { return JSON.parse(t); } catch (e) {}
+  const lines = t.split(/\n/).filter(x => x.startsWith("data:")).map(x => x.slice(5).trim()).filter(Boolean);
+  for (const line of lines) { try { const o = JSON.parse(line); if (o && (o.result || o.error)) return o; } catch (e) {} }
+  throw new Error("MCP 返回无法解析：" + t.slice(0, 200));
+}
+async function mcpRpc(method, params, server) {
+  const srv = server || mcpServers().find(x => x.url === settings.mcpUrl) || mcpServers()[0];
+  if (!srv || !srv.url) throw new Error("先填 MCP 地址");
+  const r = await http("POST", srv.url, mcpHeaders(srv), JSON.stringify({ jsonrpc: "2.0", id: uid(), method: method, params: params || {} }));
+  if (r.status === 0) throw new Error(r.error || "连不上 MCP");
+  if (r.status >= 400) throw new Error("MCP HTTP " + r.status);
+  const data = mcpParse(r.body);
+  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+  return data.result || {};
+}
+function mcpWrapper(srv, tool) {
+  return "mcp__" + String(srv.id).replace(/[^a-zA-Z0-9_]/g, "_") + "__" + String(tool.name).replace(/[^a-zA-Z0-9_]/g, "_");
+}
+function mcpToolDefs() {
+  return mcpAllTools().map(t => ({ type: "function", function: {
+    name: mcpWrapper({ id: t.serverId }, t),
+    description: ("[" + (t.serverName || "MCP") + "] " + (t.description || t.name || "MCP 工具")).slice(0, 220),
+    parameters: t.inputSchema || { type: "object", properties: {} }
+  } }));
+}
+function mcpFindCall(wrapped) {
+  for (const srv of mcpServers()) for (const tool of (srv.tools || [])) {
+    if (mcpWrapper(srv, tool) === wrapped) return { server: srv, tool };
+  }
+  return null;
+}
+async function mcpCall(wrapped, args) {
+  const hit = mcpFindCall(wrapped);
+  if (!hit) throw new Error("插件工具不存在：" + wrapped);
+  const r = await mcpRpc("tools/call", { name: hit.tool.name, arguments: args || {} }, hit.server);
+  const parts = (r.content || []).map(x => x.text || (x.type === "image" ? "[图片]" : "")).filter(Boolean);
+  return parts.join("\n") || JSON.stringify(r).slice(0, 8000);
+}
+async function mcpConnect(silent) {
+  const url = ($("#mcpUrl") ? $("#mcpUrl").value : settings.mcpUrl || "").trim();
+  const token = ($("#mcpToken") ? $("#mcpToken").value : settings.mcpToken || "").trim();
+  if (!url) throw new Error("先填 MCP HTTPS 地址");
+  if (!/^https:\/\//.test(url)) throw new Error("MCP 地址必须是 HTTPS");
+  const servers = mcpServers();
+  let srv = servers.find(x => x.url === url);
+  if (!srv) { srv = { id: "srv_" + uid(), url: url, token: token, name: url.replace(/^https:\/\//, "").slice(0, 40), tools: [] }; servers.push(srv); }
+  srv.token = token; srv.url = url;
+  await mcpRpc("initialize", { protocolVersion: "2025-03-26", capabilities: {}, clientInfo: { name: "deepseek-mobile", version: "2.0.0" } }, srv);
+  try { await mcpRpc("notifications/initialized", {}, srv); } catch (e) {}
+  const r = await mcpRpc("tools/list", {}, srv);
+  srv.tools = (r.tools || []).map(t => ({ name: t.name, description: t.description || "", inputSchema: t.inputSchema || null }));
+  settings.mcpServers = servers;
+  settings.mcpUrl = url; settings.mcpToken = token;
+  settings.mcpTools = mcpAllTools();
+  persist(); updateTop();
+  if (!silent) toast("已连接，当前共 " + mcpAllTools().length + " 个插件工具");
+  return srv.tools;
+}
+async function mcpMarketSearch(q) {
+  const url = "https://registry.modelcontextprotocol.io/v0/servers?limit=20" + (q ? "&search=" + encodeURIComponent(q) : "");
+  const r = await http("GET", url, { "Accept": "application/json" }, null);
+  if (r.status === 0) throw new Error(r.error || "连不上注册表");
+  if (r.status >= 400) throw new Error("注册表 HTTP " + r.status);
+  const data = JSON.parse(r.body);
+  const out = [];
+  for (const row of (data.servers || [])) {
+    const v = row.server || row;
+    for (const rem of (v.remotes || [])) {
+      if (rem && rem.url && /^https:\/\//.test(rem.url)) out.push({ name: v.title || v.name || rem.url, desc: v.description || "", url: rem.url, source: "MCP 注册表" });
+    }
+  }
+  return out.slice(0, 12);
+}
+
+// ---------- tools ----------
+const TOOL_DEFS = [
+  { type: "function", function: { name: "open_url", description: "在手机浏览器打开一个网址；打开 B 站等 App 请用 open_app", parameters: { type: "object", properties: { url: { type: "string" } }, required: ["url"] } } },
+  { type: "function", function: { name: "open_app", description: "按应用名或包名打开手机 App，例如 bilibili / 哔哩哔哩 / tv.danmaku.bili / QQ / 微信", parameters: { type: "object", properties: { name: { type: "string" } }, required: ["name"] } } },
+  { type: "function", function: { name: "list_files", description: "列出应用私有目录里的文件", parameters: { type: "object", properties: {} } } },
+  { type: "function", function: { name: "read_file", description: "读取应用私有目录中的文本文件", parameters: { type: "object", properties: { name: { type: "string" } }, required: ["name"] } } },
+  { type: "function", function: { name: "write_file", description: "把文本写入应用私有目录", parameters: { type: "object", properties: { name: { type: "string" }, content: { type: "string" } }, required: ["name", "content"] } } },
+  { type: "function", function: { name: "http_fetch", description: "用 GET 读取一个网页或接口的文本内容", parameters: { type: "object", properties: { url: { type: "string" } }, required: ["url"] } } },
+  { type: "function", function: { name: "create_ppt", description: "生成可打开的 .pptx 文件；有工作目录时写入工作目录，否则写应用私有目录", parameters: { type: "object", properties: { name: { type: "string" }, title: { type: "string" }, slides: { type: "array", items: { type: "object", properties: { title: { type: "string" }, bullets: { type: "array", items: { type: "string" } } }, required: ["title"] } } }, required: ["name", "title", "slides"] } } },
+  { type: "function", function: { name: "memory_save", description: "把值得长期记住的事实写入记忆", parameters: { type: "object", properties: { text: { type: "string" }, importance: { type: "integer" } }, required: ["text"] } } },
+  { type: "function", function: { name: "memory_search", description: "按关键词搜索长期记忆", parameters: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } } },
+  { type: "function", function: { name: "image_generate", description: "用已配置的图片生成 API 生成图片，返回图片链接；未配置 API 时明确报错", parameters: { type: "object", properties: { prompt: { type: "string" }, size: { type: "string" } }, required: ["prompt"] } } },
+  { type: "function", function: { name: "ask_user", description: "当需要用户本人决定时，弹出选择让用户回答", parameters: { type: "object", properties: { question: { type: "string" }, options: { type: "array", items: { type: "string" } } }, required: ["question"] } } },
+  { type: "function", function: { name: "device_info", description: "读取手机型号、品牌、Android 版本、屏幕分辨率和 ABI", parameters: { type: "object", properties: {} } } },
+  { type: "function", function: { name: "list_apps", description: "列出手机里所有可启动的应用名称和包名；打开不认识的应用前先用它识别", parameters: { type: "object", properties: {} } } },
+  { type: "function", function: { name: "share_text", description: "把文本通过系统分享面板发送出去", parameters: { type: "object", properties: { text: { type: "string" } }, required: ["text"] } } },
+  { type: "function", function: { name: "clipboard_copy", description: "复制文本到剪贴板", parameters: { type: "object", properties: { text: { type: "string" } }, required: ["text"] } } },
+  { type: "function", function: { name: "screen_read", description: "读取当前手机屏幕上的可见文字和可点击控件（需要用户开启无障碍）", parameters: { type: "object", properties: {} } } },
+  { type: "function", function: { name: "screen_tap", description: "按屏幕坐标点击（需要用户开启无障碍，坐标由 screen_read 返回）", parameters: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x","y"] } } },
+  { type: "function", function: { name: "screen_back", description: "执行系统返回键（需要用户开启无障碍）", parameters: { type: "object", properties: {} } } },
+  { type: "function", function: { name: "screen_find", description: "在当前屏幕按文字或描述查找控件，返回可点击区域", parameters: { type: "object", properties: { text: { type: "string" } }, required: ["text"] } } },
+  { type: "function", function: { name: "screen_tap_text", description: "按屏幕上的文字精准点击控件（比坐标点击稳）", parameters: { type: "object", properties: { text: { type: "string" } }, required: ["text"] } } },
+  { type: "function", function: { name: "screen_input", description: "把文字填入当前屏幕的输入框", parameters: { type: "object", properties: { text: { type: "string" } }, required: ["text"] } } },
+  { type: "function", function: { name: "screen_enter", description: "在当前输入框按回车或点搜索", parameters: { type: "object", properties: {} } } },
+  { type: "function", function: { name: "screen_swipe", description: "在当前屏幕上滑动，用来翻页/刷视频/滚动列表（需要无障碍）", parameters: { type: "object", properties: { x1: { type: "integer" }, y1: { type: "integer" }, x2: { type: "integer" }, y2: { type: "integer" }, duration: { type: "integer" } }, required: ["x1","y1","x2","y2"] } } },
+  { type: "function", function: { name: "open_app_search", description: "打开指定 App 并在搜索框里搜索一个词；适合哔哩哔哩等 App，不靠猜坐标", parameters: { type: "object", properties: { app: { type: "string" }, query: { type: "string" } }, required: ["app","query"] } } },
+  { type: "function", function: { name: "open_accessibility", description: "打开系统无障碍设置，让用户自己授权屏幕读取/点击", parameters: { type: "object", properties: {} } } },
+  { type: "function", function: { name: "list_skills", description: "列出手机版内置和导入的技能", parameters: { type: "object", properties: {} } } },
+  { type: "function", function: { name: "use_skill", description: "启用一个技能（可同时启用多个）；name 传技能名称或 id", parameters: { type: "object", properties: { name: { type: "string" } }, required: ["name"] } } }
+];
+const TOOL_NAMES = TOOL_DEFS.map(t => t.function.name);
+
+async function execTool(name, args) {
+  const a = android();
+  args = args || {};
+  try {
+    switch (name) {
+      case "open_url": return { text: a ? a.openUrl(args.url) : "无 Android 环境", detail: args.url };
+      case "open_app": return { text: a ? a.openApp(args.name) : "无 Android 环境", detail: String(args.name || "") };
+      case "list_files": { const raw = a ? (settings.workspaceUri ? a.wsList() : a.listFiles()) : "[]"; const arr = JSON.parse(raw); return { text: arr.map(f => f.name + " (" + bytes(f.size) + ")").join("\n") || "目录为空", detail: (settings.workspaceUri ? settings.workspaceName : "应用私有目录") + " · " + arr.length + " 个文件" }; }
+      case "read_file": {
+        if (!a) return { text: "无 Android 环境" };
+        const name = String(args.name || "");
+        let r = settings.workspaceUri ? a.wsRead(name) : a.readFile(name);
+        if (settings.workspaceUri && /读取失败|不存在|过大/.test(String(r))) {
+          const fallback = a.readFile(name);
+          if (!/不存在/.test(String(fallback))) r = fallback;
+        }
+        return { text: r, detail: (settings.workspaceUri ? settings.workspaceName + "/" : "私有/") + name };
+      }
+      case "write_file": {
+        if (!a) return { text: "无 Android 环境" };
+        const content = String(args.content == null ? "" : args.content);
+        const name = String(args.name || "code.txt");
+        if (/\.pptx$/i.test(name)) return { text: "不要用 write_file 写二进制 PPT；请调用 create_ppt(name,title,slides)" };
+        let r = settings.workspaceUri ? a.wsWrite(name, content) : a.writeFile(name, content);
+        if (settings.workspaceUri && /写入失败|权限已失效|创建文件失败|无法写入/.test(String(r))) {
+          const fallback = a.writeFile(name, content);
+          return { text: "工作目录写入失败（" + r + "），已改存应用私有目录：" + fallback, detail: "私有/" + name };
+        }
+        return { text: r, detail: (settings.workspaceUri ? settings.workspaceName + "/" : "私有/") + name };
+      }
+      case "http_fetch": { const r = await http("GET", args.url, {}, null); return { text: (r.body || r.error || "").slice(0, 20000), detail: args.url + " · " + r.status }; }
+      case "create_ppt": {
+        if (!a) return { text: "无 Android 环境" };
+        const payload = { title: String(args.title || "演示文稿"), slides: Array.isArray(args.slides) ? args.slides : [] };
+        const r = a.createPpt(String(args.name || "presentation.pptx"), JSON.stringify(payload));
+        return { text: r, detail: "PPT · " + (payload.slides.length) + " 页" };
+      }
+      case "shell_exec": {
+        if (!a || !a.shellExec) return { text: "当前版本不支持终端", detail: "终端不可用" };
+        const command = String(args.command || "").trim();
+        if (!command) return { text: "命令为空" };
+        const ok = await askUser("要在手机上执行这条命令吗？", ["执行", "取消"]);
+        if (ok !== "执行") return { text: "用户取消了命令", detail: "已取消" };
+        const out = a.shellExec(command, String(args.cwd || settings.terminalCwd || ""));
+        return { text: String(out).slice(0, 20000), detail: command.slice(0, 90) };
+      }
+      case "memory_save": { const id = memSave(args.text, args.importance); return { text: id ? "已记住" : "内容为空", detail: String(args.text).slice(0, 80) }; }
+      case "memory_search": { const hit = memSearch(args.query, 6); return { text: hit.length ? hit.map(m => "- " + m.text + "（强度 " + memStrength(m).toFixed(2) + "）").join("\n") : "没有找到相关记忆", detail: args.query }; }
+      case "image_generate": {
+        if (!settings.imageUrl) return { text: "还没有配置图片生成 API。请到 设置 → 模型服务 填图片 API 地址/Key/模型名；本版不假装有内置图片模型。", detail: "未配置图片 API" };
+        const headers = { "Content-Type": "application/json" };
+        if (settings.imageKey) headers["Authorization"] = "Bearer " + settings.imageKey;
+        const body = JSON.stringify({ model: settings.imageModel || "gpt-image-1", prompt: String(args.prompt || ""), size: String(args.size || "1024x1024"), n: 1 });
+        const r = await http("POST", settings.imageUrl, headers, body);
+        if (r.status === 0 || r.status >= 400) return { text: "图片 API 失败：" + (r.error || r.body || r.status), detail: "图片 API 失败" };
+        let data; try { data = JSON.parse(r.body || "{}"); } catch (e) { return { text: "图片 API 返回不是 JSON", detail: "图片 API" }; }
+        const item = data.data && data.data[0] || {};
+        if (item.url) return { text: "已生成图片：" + item.url + "\n（可直接打开这个链接保存）", detail: "图片 URL" };
+        if (item.b64_json) return { text: "图片 API 返回了 base64，当前手机版不落盘；请把接口改成返回 url。", detail: "图片 b64" };
+        return { text: "图片 API 没有返回 url：" + JSON.stringify(data).slice(0, 500), detail: "图片 API 异常" };
+      }
+      case "ask_user": { const ans = await askUser(args.question, args.options || []); return { text: ans, detail: String(args.question).slice(0, 60) }; }
+      case "device_info": { const raw = a ? a.deviceInfo() : "{}"; const d = JSON.parse(raw); return { text: "型号：" + d.model + "\n品牌：" + d.brand + " / " + (d.manufacturer || "") + "\nAndroid：" + d.android + " (SDK " + d.sdk + ")\n屏幕：" + (d.width || "?") + "×" + (d.height || "?") + " @" + (d.density || "?") + "dpi\nABI：" + d.abi + "\n语言：" + (d.locale || ""), detail: d.model }; }
+      case "list_apps": {
+        if (!a) return { text: "无 Android 环境" };
+        try {
+          const data = JSON.parse(a.listApps() || "{}"), apps = data.apps || [];
+          return { text: apps.map(x => "- " + x.name + "  (" + x.package + ")").join("\n") || "没有读到可启动应用", detail: apps.length + " 个可启动应用" };
+        } catch (e) { return { text: "读取应用列表失败：" + e.message, detail: "应用列表" }; }
+      }
+      case "share_text": return { text: a ? a.shareText(args.text) : "无 Android 环境", detail: "分享" };
+      case "clipboard_copy": return { text: a ? a.copyText(args.text) : "无 Android 环境", detail: "剪贴板" };
+      case "screen_read": { const raw = a ? a.screenRead() : "{\"error\":\"无 Android 环境\"}"; return { text: raw, detail: "读取屏幕" }; }
+      case "screen_tap": { const r = a ? a.screenTap(Number(args.x) || 0, Number(args.y) || 0) : "无 Android 环境"; return { text: r, detail: args.x + "," + args.y }; }
+      case "screen_back": { const r = a ? a.screenBack() : "无 Android 环境"; return { text: r, detail: "返回键" }; }
+      case "screen_find": { const r = a ? a.screenFind(args.text) : "无 Android 环境"; return { text: r, detail: String(args.text || "") }; }
+      case "screen_tap_text": { const r = a ? a.screenTapText(args.text) : "无 Android 环境"; return { text: r, detail: String(args.text || "") }; }
+      case "screen_input": { const r = a ? a.screenInput(args.text) : "无 Android 环境"; return { text: r, detail: String(args.text || "") }; }
+      case "screen_enter": { const r = a ? a.screenEnter() : "无 Android 环境"; return { text: r, detail: "回车/搜索" }; }
+      case "screen_swipe": { const r = a ? a.screenSwipe(Number(args.x1)||0, Number(args.y1)||0, Number(args.x2)||0, Number(args.y2)||0, Number(args.duration)||300) : "无 Android 环境"; return { text: r, detail: `${args.x1},${args.y1} → ${args.x2},${args.y2}` }; }
+      case "open_app_search": {
+        if (!a) return { text: "无 Android 环境" };
+        const app = String(args.app || ""), q = String(args.query || "");
+        const opened = a.openApp(app);
+        await new Promise(r => setTimeout(r, 1600));
+        let tap = "", input = "";
+        for (let i = 0; i < 4; i++) {
+          tap = a.screenTapText("搜索");
+          await new Promise(r => setTimeout(r, 800));
+          input = a.screenInput(q);
+          if (!/没有可输入|输入失败/.test(String(input))) break;
+        }
+        await new Promise(r => setTimeout(r, 400));
+        const enter = a.screenEnter();
+        return { text: opened + "\n" + tap + "\n" + input + "\n" + enter, detail: app + " · " + q + " · 已尝试搜索" };
+      }
+      case "open_accessibility": { const r = a ? a.openAccessibility() : "无 Android 环境"; return { text: r, detail: "无障碍设置" }; }
+      case "list_skills": {
+        const all = SKILLS.concat(settings.customSkills || []);
+        return { text: all.map(k => "- " + k.name + "（" + (k.group || "导入") + "）：" + (k.desc || "") + (isSkillEnabled(k.id) ? " [已启用]" : "")).join("\n"), detail: all.length + " 个技能 · 已启用 " + settings.skillIds.length };
+      }
+      case "use_skill": {
+        const all = SKILLS.concat(settings.customSkills || []);
+        const hit = all.find(k => k.id === args.name || k.name === args.name);
+        if (!hit) return { text: "没有这个技能：" + args.name };
+        if (!isSkillEnabled(hit.id)) settings.skillIds.push(hit.id);
+        settings.skillId = settings.skillIds[0];
+        persist(); updateTop(); renderSettings();
+        return { text: "已启用技能：" + hit.name + "（当前共 " + settings.skillIds.length + " 个）", detail: hit.name };
+      }
+      default:
+        if (name.startsWith("mcp__")) {
+          try { return { text: await mcpCall(name, args), detail: (mcpFindCall(name) || {}).tool ? mcpFindCall(name).tool.name : name }; }
+          catch (e) { return { text: "MCP 工具失败：" + e.message }; }
+        }
+        return { text: "未知工具：" + name };
+    }
+  } catch (e) { return { text: "工具执行失败：" + e.message }; }
+}
+
+// ---------- ask user ----------
+function askUser(question, options) {
+  return new Promise((resolve) => {
+    const box = $("#askBox");
+    box.innerHTML = `<h3>需要你选择</h3><p>${esc(question)}</p>` +
+      (options && options.length ? options.map((o, i) => `<button data-a="${i}">${esc(o)}</button>`).join("") : `<div class="field"><input id="askInput" placeholder="输入回答"></div><button data-a="input" class="primary">确定</button>`) +
+      `<button class="cancel" data-a="cancel">取消</button>`;
+    $("#ask").classList.add("show");
+    const done = (v) => { $("#ask").classList.remove("show"); resolve(v); };
+    box.querySelectorAll("[data-a]").forEach(b => b.onclick = () => {
+      const k = b.dataset.a;
+      if (k === "cancel") done("用户取消了选择");
+      else if (k === "input") done(($("#askInput").value || "").trim() || "用户未输入");
+      else done(options[Number(k)]);
+    });
+  });
+}
+
+// ---------- agent ----------
+function allSkills() { return SKILLS.concat(settings.customSkills || []); }
+function normalizeSkillIds() {
+  if (!Array.isArray(settings.skillIds)) settings.skillIds = [];
+  const existing = allSkills().map(k => k.id);
+  settings.skillIds = settings.skillIds.filter(id => existing.includes(id));
+  if (!settings.skillIds.length) settings.skillIds = ["auto"];
+  settings.skillId = settings.skillIds[0];
+}
+function isSkillEnabled(id) { return (settings.skillIds || []).includes(id); }
+function activeSkills() {
+  normalizeSkillIds();
+  return settings.skillIds.map(id => allSkills().find(k => k.id === id)).filter(Boolean);
+}
+function activeSkill() { normalizeSkillIds(); return activeSkills()[0] || SKILLS[0]; }
+function toggleSkill(id) {
+  normalizeSkillIds();
+  if (isSkillEnabled(id)) settings.skillIds = settings.skillIds.filter(x => x !== id);
+  else settings.skillIds.push(id);
+  if (!settings.skillIds.length) settings.skillIds = ["auto"];
+  settings.skillId = settings.skillIds[0];
+  persist(); updateTop(); renderSettings();
+}
+function enableAllSkills() {
+  settings.skillIds = allSkills().map(k => k.id);
+  settings.skillId = settings.skillIds[0] || "auto";
+  persist(); updateTop(); renderSettings(); toast("已启用全部 " + settings.skillIds.length + " 个技能");
+}
+function skillPromptText() {
+  const md = modeOf();
+  const list = activeSkills();
+  const budget = settings.mode === "local" ? 5200 : 22000;
+  const each = Math.max(500, Math.floor(budget / Math.max(1, list.length)));
+  return list.map(k => `### ${k.name}（${k.group || "导入"}）\n${String(k.prompt || k.desc || "").slice(0, each)}`).join("\n");
+}
+function systemPrompt() {
+  const md = modeOf();
+  const qqPersona = current && /^QQ /.test(current.title) && settings.qqPersona ? `QQ 远程助手性格：${settings.qqPersona}。` : "";
+  const list = activeSkills();
+  const ws = settings.workspaceUri ? `已授权工作目录：${settings.workspaceName}（读写文件默认用这里）` : "工作目录：未选择（文件工具先用应用私有目录）";
+  return `你是 DeepSeek Mobile，一个能真实干活的手机 Agent。作者 ETC。
+当前工作模式：${md.name} —— ${md.desc}。AI 思考等级：${thinkCfg().name}（${thinkCfg().desc}，最多 ${thinkCfg().rounds} 轮工具/推理）。
+当前启用技能（${list.length} 个）：${list.map(k => k.name).join("、")}
+${skillPromptText()}
+${ws}
+终端默认目录：${settings.terminalCwd || "应用私有目录"}（shell_exec 会在这里执行；写代码/建文件优先用工作目录或该终端目录）。
+你能读取屏幕文字并在用户授权后点击屏幕；人机验证必须用户本人完成，不要尝试绕过。
+${qqPersona}
+已连接 MCP 插件工具：${mcpAllTools().map(t => t.name).join("、") || "无"}。
+${md.name === "精简" ? "回答尽量 3–6 行，先给结果，少解释。" : ""}
+${md.name === "极速" ? "直接给最终结果，不列计划、不重复确认，除非缺关键信息。" : ""}
+${md.name === "创造" ? "多给具体方案、结构和可执行产出；写网页/文案时直接给出完整内容。" : ""}
+${md.name === "建模" ? "先明确对象、约束和输入，再给出结构化模型/代码/表格；复杂任务先列 3–5 步。" : ""}
+你能通过工具读写工作目录文件、打开手机浏览器/App、读取并点击屏幕文字、输入搜索词、记住长期事实、询问用户选择。打开 B 站等 App 用 open_app 或 open_app_search；生成 PPT 用 create_ppt，不要用 write_file 写 .pptx。做 PPT 前如果用户没说明主题、页数、受众或风格，先用 ask_user 问清楚。
+规则：
+1. 能直接做就做，不要只给建议；需要用户本人决定、涉及支付/登录/验证码/删除时，用 ask_user。
+2. 人机验证、验证码、支付确认必须让用户本人完成，不要尝试绕过。
+3. 回答简洁、说人话，先给结果。
+4. 需要工具时调用工具；不要编造工具结果。${memContext(current ? current.title : "")}`;
+}
+
+function apiUrl() {
+  let base = (settings.baseUrl || "").trim().replace(/\/+$/, "");
+  if (!base) return "";
+  if (base.endsWith("/chat/completions")) return base;
+  return base + "/chat/completions";
+}
+
+function toolStep(name, args) {
+  args = args || {};
+  if (name === "open_app_search") return `打开 ${args.app || "App"}，搜索「${args.query || ""}」`;
+  if (name === "open_app") return `打开应用 ${args.name || ""}`;
+  if (name === "open_url") return `打开网页 ${args.url || ""}`;
+  if (name === "http_fetch") return `读取网页 ${args.url || ""}`;
+  if (name === "write_file") return `写入文件 ${args.name || "file.txt"}`;
+  if (name === "read_file") return `读取文件 ${args.name || ""}`;
+  if (name === "create_ppt") return `生成 PPT ${args.name || "presentation.pptx"}（${(args.slides || []).length} 页）`;
+  if (name === "screen_read") return "读取当前屏幕";
+  if (name === "screen_find") return `查找屏幕控件「${args.text || ""}」`;
+  if (name === "screen_tap_text") return `点击「${args.text || ""}」`;
+  if (name === "screen_input") return `输入「${args.text || ""}」`;
+  if (name === "screen_enter") return "按回车/搜索";
+  if (name === "shell_exec") return `执行命令 ${String(args.command || "").slice(0, 90)}`;
+  if (name === "memory_save") return "写入长期记忆";
+  if (name === "memory_search") return `搜索记忆「${args.query || ""}」`;
+  if (name === "ask_user") return "询问你的选择";
+  return name;
+}
+
+async function runCloud(userText) {
+  const url = apiUrl();
+  if (!url || !settings.model) throw new Error("请先在设置里填写 API 地址和模型名");
+  const messages = [{ role: "system", content: systemPrompt() }];
+  for (const m of current.messages) {
+    if (m.role === "user" || m.role === "assistant") messages.push({ role: m.role, content: m.modelContent || m.content });
+  }
+  const headers = { "Content-Type": "application/json" };
+  if (settings.apiKey) headers["Authorization"] = "Bearer " + settings.apiKey;
+  const toolsUsed = [];
+  const rounds = thinkCfg().rounds;
+  for (let round = 0; round < rounds; round++) {
+    const body = JSON.stringify({
+      model: settings.model, messages, tools: TOOL_DEFS.concat(mcpToolDefs()), tool_choice: "auto",
+      temperature: modeOf().temp, max_tokens: modeOf().maxTokens, stream: false
+    });
+    setStatus(round ? "继续处理工具结果…" : "模型思考中…"); updateRun(round ? "继续处理工具结果" : "模型思考中");
+    const r = await http("POST", url, headers, body);
+    if (stopRequested) throw new Error("用户结束了任务");
+    if (r.status === 0) throw new Error(r.error || "网络请求失败");
+    if (r.status >= 400) throw new Error("API " + r.status + "：" + (r.body || "").slice(0, 400));
+    let data; try { data = JSON.parse(r.body); } catch (e) { throw new Error("API 返回不是 JSON：" + r.body.slice(0, 200)); }
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    const msg = data.choices && data.choices[0] && data.choices[0].message;
+    if (!msg) throw new Error("API 没有返回 message");
+    const think = String(msg.reasoning_content || msg.reasoning || msg.thinking || "").trim();
+    if (think) addWorkLog("思考：" + think.replace(/\s+/g, " ").slice(0, 240), "think");
+    const calls = msg.tool_calls || [];
+    if (calls.length) addWorkLog("模型决定执行 " + calls.length + " 个工具");
+    if (calls.length) {
+      messages.push({ role: "assistant", content: msg.content || "", tool_calls: calls });
+      for (const c of calls) {
+        const name = c.function && c.function.name;
+        let args = {}; try { args = JSON.parse(c.function.arguments || "{}"); } catch (e) {}
+        setStatus("执行工具：" + name); updateRun("执行工具：" + toolStep(name, args));
+        const res = await execTool(name, args);
+        if (stopRequested) throw new Error("用户结束了任务");
+        addWorkLog("工具 " + name + " 完成：" + String(res.detail || res.text || "").replace(/\s+/g, " ").slice(0, 140));
+        toolsUsed.push({ name, detail: res.detail || "" });
+        messages.push({ role: "tool", tool_call_id: c.id, content: res.text });
+      }
+      continue;
+    }
+    return { text: msg.content || "", tools: toolsUsed };
+  }
+  throw new Error("工具调用轮次过多，已停止");
+}
+
+function localSystem() {
+  return `你是 DeepSeek Mobile 手机本地版，运行在用户手机上。当前模式：${modeOf().name}（${modeOf().desc}）。当前思考等级：${thinkCfg().name}（${thinkCfg().desc}）。当前启用技能：${activeSkills().map(k => k.name).join("、") || "自动"}。回答简洁。${skillPromptText().slice(0, 5000)}
+需要工具时只输出一行 JSON：{"tool":"工具名","args":{...}}，不要解释。
+可用工具：open_url(url), open_app(name), open_app_search(app,query), list_files(), read_file(name), write_file(name,content), create_ppt(name,title,slides), http_fetch(url), image_generate(prompt,size), memory_save(text,importance), memory_search(query), ask_user(question,options), device_info(), list_apps(), screen_read(), screen_find(text), screen_tap_text(text), screen_input(text), screen_enter(), screen_swipe(x1,y1,x2,y2), screen_tap(x,y), screen_back(), shell_exec(command), list_skills(), use_skill(name)${mcpAllTools().length ? "，以及 MCP 工具 " + mcpAllTools().map(t => t.name).join("、") : ""}。
+做 PPT 先用 ask_user 确认主题、页数、受众和风格；生成时调用 create_ppt，不要用 write_file 写 .pptx。打开 B 站等 App 先用 list_apps 确认已安装的名称/包名，再 open_app；搜索时用 screen_find / screen_tap_text / screen_input / screen_enter 按文字操作，翻页/刷视频用 screen_swipe，不要瞎猜坐标。
+人机验证、验证码、支付必须让用户本人完成。${memContext(current ? current.title : "")}`;
+}
+function parseToolJson(text) {
+  const t = String(text || "").trim();
+  const m = t.match(/\{[\s\S]*"tool"[\s\S]*\}/);
+  if (!m) return null;
+  try { const o = JSON.parse(m[0]); return o && o.tool ? o : null; } catch (e) { return null; }
+}
+
+async function ensureLocalReady() {
+  const a = android();
+  if (!a) throw new Error("当前不在 Android 环境");
+  if (settings.localLoaded) {
+    try { if (a.localReady && a.localReady()) return; } catch (e) {}
+  }
+  if (!settings.localPath) throw new Error("还没有选择 GGUF 模型，请到 设置 → 本地 GGUF 选择模型");
+  if (!settings.localLoading) maybeAutoLoadLocal(true);
+  setStatus("本地模型加载中，任务已排队…");
+  updateRun("等待本地模型加载");
+  for (let i = 0; i < 180; i++) {
+    try {
+      if (a.localReady && a.localReady()) {
+        settings.localLoaded = true; settings.localLoading = false; settings.localError = "";
+        persist(); updateTop(); renderSettings(); return;
+      }
+    } catch (e) {}
+    if (!settings.localLoading && settings.localError) throw new Error(settings.localError);
+    await new Promise(r => setTimeout(r, 500));
+  }
+  throw new Error(settings.localError || "本地模型加载超时；请到 设置 → 本地 GGUF 点“加载/重载”，或换小一点的模型");
+}
+
+async function runLocal(userText) {
+  await ensureLocalReady();
+  const roles = ["system"], contents = [localSystem()];
+  for (const m of current.messages) { if (m.role === "work") continue; roles.push(m.role === "user" ? "user" : "assistant"); contents.push(m.modelContent || m.content); }
+  const toolsUsed = [];
+  const rounds = settings.localUnlimited ? 40 : thinkCfg().rounds;
+  for (let round = 0; round < rounds; round++) {
+    setStatus(round ? "本地模型继续处理…" : "本地模型生成中…"); updateRun(round ? "本地模型继续处理" : "本地模型生成中");
+    const r = await localChat(roles, contents, Math.max(modeOf().maxTokens, thinkCfg().tokens));
+    if (stopRequested) throw new Error("用户结束了任务");
+    if (r.error) throw new Error(r.error);
+    const call = parseToolJson(r.text);
+    if (!call) { addWorkLog("本地模型已生成最终回答"); return { text: r.text.trim(), tools: toolsUsed }; }
+    setStatus("执行工具：" + call.tool); updateRun("执行工具：" + toolStep(call.tool, call.args || {}));
+    addWorkLog("调用工具 " + call.tool);
+    const res = await execTool(call.tool, call.args || {});
+    if (stopRequested) throw new Error("用户结束了任务");
+    addWorkLog("工具 " + call.tool + " 完成：" + String(res.detail || res.text || "").replace(/\s+/g, " ").slice(0, 140));
+    toolsUsed.push({ name: call.tool, detail: res.detail || "" });
+    roles.push("assistant"); contents.push(r.text);
+    roles.push("user"); contents.push("工具 " + call.tool + " 的结果：\n" + res.text + "\n请继续完成，或直接给出最终回答。");
+  }
+  return { text: "本地模型工具轮次过多，已停止", tools: toolsUsed };
+}
+
+function setStatus(t) { const el = $("#statusText"); if (el) el.textContent = t; }
+function setBusyUI(on) {
+  const b = $("#btnSend"); if (!b) return;
+  b.classList.toggle("stop", !!on);
+  b.textContent = on ? "停止" : "↑";
+  b.title = on ? "点击结束本次任务" : "发送";
+  b.setAttribute("aria-label", on ? "停止任务" : "发送");
+}
+async function requestStop() {
+  if (!busy) return;
+  const ans = await askUser("要结束本次任务吗？", ["结束任务", "继续执行"]);
+  if (ans !== "结束任务") return;
+  stopRequested = true;
+  try { const a = android(); if (a && a.cancelLocal) a.cancelLocal(); } catch (e) {}
+  setStatus("正在停止…"); updateRun("用户要求结束任务");
+  toast("正在停止本次任务…");
+}
+
+function pptRequest(text) { return /\bppt\b|幻灯片|演示文稿|slides/i.test(String(text || "")); }
+function pptBriefScore(text) {
+  const t = String(text || "");
+  return [/\d+\s*(页|张)|页数|p\d+/i.test(t), /受众|客户|领导|同事|听众|学生|老板/.test(t), /风格|简约|简洁|商务|科技|创意|活泼|正式/.test(t), /主题|关于|介绍|汇报|方案|产品|项目|教学/.test(t)].filter(Boolean).length;
+}
+async function collectPptBrief(text) {
+  if (!pptRequest(text) || pptBriefScore(text) >= 3) return "";
+  const parts = [];
+  const topicGiven = /主题|关于|介绍|汇报|方案|产品|项目|教学/.test(text);
+  if (!topicGiven) {
+    const t = await askUser("这份 PPT 的主题或用途是什么？", []);
+    if (!t || t === "用户取消了选择") return null;
+    parts.push("主题/用途：" + t);
+  }
+  if (!/\d+\s*(页|张)|页数/.test(text)) {
+    const p = await askUser("大约做多少页？", ["5–8 页", "10–12 页", "15 页以上"]);
+    if (!p || p === "用户取消了选择") return null;
+    parts.push("页数：" + p);
+  }
+  if (!/受众|客户|领导|同事|听众|学生|老板/.test(text)) {
+    const a = await askUser("主要给谁看？", ["内部汇报", "客户/领导", "教学/分享"]);
+    if (!a || a === "用户取消了选择") return null;
+    parts.push("受众：" + a);
+  }
+  if (!/风格|简约|简洁|商务|科技|创意|活泼|正式/.test(text)) {
+    const st = await askUser("希望什么风格？", ["简洁商务", "科技感", "创意活泼"]);
+    if (!st || st === "用户取消了选择") return null;
+    parts.push("风格：" + st);
+  }
+  return parts.length ? "\n[PPT 需求确认]\n" + parts.join("\n") : "";
+}
+
+async function send() {
+  if (busy) return;
+  let text = $("#input").value.trim();
+  if (!text && !pendingAttach) return;
+  let brief = "";
+  if (text && pptRequest(text)) {
+    brief = await collectPptBrief(text);
+    if (brief === null) { toast("已取消 PPT 任务"); return; }
+    if (brief) text += brief;
+  }
+  const attach = pendingAttach;
+  $("#input").value = ""; $("#input").style.height = "auto";
+  const shown = text + (attach ? (text ? "\n" : "") + "📎 " + attach.name : "");
+  const full = text + (attach ? "\n\n[用户附加的文件：" + attach.name + "]\n" + attach.text.slice(0, 120000) : "");
+  pendingAttach = null; $("#attachPill").classList.add("hidden");
+  addMsg("user", shown, [], full);
+  const workStart = current.messages.length;
+  addWorkLog("分析任务，制定执行计划");
+  observeMemory(text);
+  busy = true; stopRequested = false; setBusyUI(true); renderChat();
+  const run = startRun(text || shown);
+  try {
+    const memHits = memSearch(text || shown, 4).filter(m => memStrength(m) > 0.25);
+    if (memHits.length) addWorkLog(`注入长期记忆 ${memHits.length} 条`);
+    addWorkLog(`启用技能：${activeSkills().map(k => k.name).join("、") || "自动"} · 模式：${modeOf().name}`);
+    updateRun("已提交任务");
+    const result = settings.mode === "local" ? await runLocal(text || shown) : await runCloud(text || shown);
+    busy = false; setBusyUI(false);
+    const process = current.messages.slice(workStart).filter(m => m.role === "work");
+    const elapsed = run && run.start ? now() - run.start : 0;
+    addMsg("assistant", result.text || "（没有返回内容）", result.tools, null, process, elapsed);
+    finishRun("done", result.text || "没有返回内容");
+  } catch (e) {
+    busy = false; setBusyUI(false);
+    const process = current.messages.slice(workStart).filter(m => m.role === "work");
+    const elapsed = run && run.start ? now() - run.start : 0;
+    if (stopRequested) { addMsg("assistant", "任务已结束。", [], null, process, elapsed); finishRun("stopped", "用户结束了任务"); }
+    else { addMsg("assistant", "出错了：" + e.message, [], null, process, elapsed); finishRun("error", e.message); }
+  }
+  renderChat(); updateTop();
+}
+
+// ---------- drawer ----------
+function openDrawer() { $("#drawer").classList.add("show"); renderSessions(); }
+function closeDrawer() { $("#drawer").classList.remove("show"); }
+
+// ---------- settings render ----------
+function field(label, id, value, type, placeholder) {
+  return `<div class="field"><label>${label}</label><input id="${id}" type="${type || "text"}" value="${esc(value == null ? "" : value)}" placeholder="${esc(placeholder || "")}"></div>`;
+}
+function renderSettings() {
+  const body = $("#settingsBody");
+  if (currentTab === "model") {
+    body.innerHTML = `<div class="section"><h2>模型服务</h2><p class="desc">填你自己的 OpenAI 兼容接口。密钥只存在本机，请求只发往你填写的地址。</p>
+      <div class="field"><label>运行方式</label><select id="setMode"><option value="cloud" ${settings.mode === "cloud" ? "selected" : ""}>云端 API</option><option value="local" ${settings.mode === "local" ? "selected" : ""}>本地 GGUF</option></select></div>
+      <div class="field"><label>工作模式</label><select id="setWork">
+        ${Object.keys(MODES).map(k => `<option value="${k}" ${settings.workMode === k ? "selected" : ""}>${MODES[k].name} · ${MODES[k].desc}</option>`).join("")}
+      </select></div>
+      <div class="field"><label>AI 思考等级</label><select id="setThink">
+        ${Object.keys(THINK).map(k => `<option value="${k}" ${settings.thinkLevel === k ? "selected" : ""}>${THINK[k].name} · ${THINK[k].desc}</option>`).join("")}
+      </select></div>
+      ${field("API 地址（含 /v1）", "setBase", settings.baseUrl, "url", "https://api.deepseek.com/v1")}
+      ${field("API Key", "setKey", settings.apiKey, "password", "sk-…")}
+      ${field("模型名", "setModel", settings.model, "text", "deepseek-chat / qwen2.5:7b")}
+      <div class="row">${field("温度", "setTemp", settings.temperature, "number")}${field("最大 tokens", "setMax", settings.maxTokens, "number")}</div>
+      <h2 style="margin-top:18px">图片生成 API（可选）</h2>
+      <p class="desc">填 OpenAI 兼容的 /images/generations 地址；图片任务会调用它并把结果链接返回。未填则不会假装生成图片。</p>
+      ${field("图片 API 地址", "setImageUrl", settings.imageUrl, "url", "https://api.openai.com/v1/images/generations")}
+      ${field("图片 API Key", "setImageKey", settings.imageKey, "password", "sk-…")}
+      ${field("图片模型", "setImageModel", settings.imageModel, "text", "gpt-image-1 / flux / 你的模型名")}
+      <button class="btn primary" id="saveModel">保存设置</button>
+      <div class="note">DeepSeek、Kimi、OpenAI、Ollama、LM Studio 等 OpenAI 兼容接口都可以。API Key 只保存在本机 WebView 存储里。</div></div>`;
+  } else if (currentTab === "local") {
+    body.innerHTML = `<div class="section"><h2>本地 GGUF</h2><p class="desc">模型文件会复制到应用私有目录，完全离线推理。首次加载需要几十秒，0.5B–3B 模型在手机上比较稳。</p>
+      <div class="kv"><span>当前模型</span><span>${esc(settings.localName || "未选择")}</span></div>
+      <div class="kv"><span>状态</span><span>${settings.localLoading ? "正在加载…" : (settings.localLoaded ? "已加载" : "未加载")}</span></div>
+      <div class="kv"><span>自动加载</span><span><input id="autoLocal" type="checkbox" ${settings.autoLoadLocal !== false ? "checked" : ""} style="width:auto"></span></div>
+      <div class="kv"><span>本地长任务</span><span><input id="localUnlimited" type="checkbox" ${settings.localUnlimited !== false ? "checked" : ""} style="width:auto"> 最多40轮</span></div>
+      <div class="kv"><span>信息</span><span>${esc(settings.localInfo || "—")}</span></div>
+      ${settings.localError ? `<div class="note warn">上次加载失败：${esc(settings.localError)}</div>` : ""}
+      <div class="row" style="margin:12px 0"><button class="btn" id="pickModel">选择 .gguf</button><button class="btn primary" id="loadModel" ${settings.localPath ? "" : "disabled"}>${settings.localLoading ? "加载中…" : "加载/重载"}</button></div>
+      <div class="row">${field("上下文", "setCtx", settings.localCtx, "number")}${field("线程", "setThreads", settings.localThreads, "number")}</div>
+      <button class="btn ghost" id="unloadModel">卸载模型</button>
+      <div class="note">启动和切回前台会自动检测并重新加载上次使用的模型；如手机内存紧张会自动失败，可在上方关闭自动加载。人机验证、支付仍需你本人操作。</div></div>`;
+  } else if (currentTab === "runs") {
+    const list = runs.length ? runs.map(r => {
+      const st = r.status === "running" ? "进行中" : (r.status === "error" ? "失败" : (r.status === "interrupted" ? "中断" : (r.status === "stopped" ? "已结束" : "完成")));
+      const t = new Date(r.start || now()).toLocaleString();
+      return `<div class="memitem"><div class="mt">${esc(r.title)}</div><div class="mm"><span>${esc(st)}</span><span>${esc(t)}</span><span>${(r.steps || []).length} 步</span></div>${(r.steps || []).slice(-5).map(x => `<div class="kv"><span>步骤</span><span style="text-align:right;max-width:70%">${esc(x)}</span></div>`).join("")}${r.result ? `<div class="note">${esc(r.result.slice(0, 260))}</div>` : ""}</div>`;
+    }).join("") : `<div class="note">还没有任务记录。发送任务后，这里会记录开始时间、每一步和结果。</div>`;
+    body.innerHTML = `<div class="section"><h2>任务记录</h2><p class="desc">每次执行都会留下状态、步骤和结果；通知栏和悬浮窗也会同步显示当前任务。</p>${list}<div class="row" style="margin-top:10px"><button class="btn" id="overlayPerm">开启悬浮窗</button><button class="btn" id="keepAlive">启动后台服务</button></div><button class="btn ghost" id="clearRuns" style="width:100%;margin-top:10px">清空已完成记录</button><div class="note">通知栏会显示当前任务；授权悬浮窗后可在其他 App 上方看到状态。App 被系统彻底杀掉后任务会停止。</div></div>`;
+  } else if (currentTab === "terminal") {
+    body.innerHTML = `<div class="section"><h2>终端</h2><p class="desc">使用内置 32 位 Termux 终端（首次启动后台解压）；可运行 sh、文件操作、Python/apt 等已有工具。默认在应用目录执行，可改成 /sdcard/…；需要系统存储权限。</p>
+      ${field("默认终端目录（可选）", "termCwd", settings.terminalCwd, "text", "/sdcard/Download 或留空用应用目录")}
+      <div class="field"><label>命令</label><input id="termCmd" placeholder="例如 ls -la /sdcard 或 echo hello"></div>
+      <button class="btn primary" id="termRun" style="width:100%">运行命令</button>
+      <div class="note" id="termOut" style="margin-top:10px;white-space:pre-wrap;font-family:monospace;color:#a9cdb7">尚未运行</div>
+      <div class="note">每次执行会显示命令输出；涉及删除、网络或安装时请先确认。内置 32 位 Termux 核心：首次启动会在后台解压；32 位 ARM 设备直接可用，64 位设备不支持 32 位时会自动回退系统 shell。</div></div>`;
+  } else if (currentTab === "skills") {
+    const list = activeSkills();
+    const custom = settings.customSkills || [];
+    body.innerHTML = `<div class="section"><h2>技能</h2><p class="desc">内置技能共 ${SKILLS.length} 个，可以同时启用多个；启用的技能会一起注入当前任务。也可以导入电脑版的 SKILL.md。</p>
+      <div class="kv"><span>已启用</span><span>${list.length} 个：${esc(list.map(k => k.name).join("、").slice(0, 80))}</span></div>
+      <div class="row" style="margin:10px 0"><button class="btn primary" id="skillAll">全部启用</button><button class="btn ghost" id="skillNone">只留自动</button></div>
+      <div class="field"><label>搜索技能</label><input id="skillSearch" value="${esc(skillQuery)}" placeholder="输入名称或用途，例如 表格 / 排错 / 翻译"></div>
+      <div id="skillList">${SKILLS.map(k => `<div class="memitem" data-skill-name="${esc((k.name + " " + k.desc + " " + k.group).toLowerCase())}"><button data-use-skill="${k.id}">${isSkillEnabled(k.id) ? "已启用" : "启用"}</button><div class="mt">${esc(k.name)} <small style="color:#6f8d7a">${esc(k.group)}</small></div><div class="mm"><span>${esc(k.desc)}</span></div></div>`).join("")}${custom.map(k => `<div class="memitem" data-skill-name="${esc((k.name + " 导入").toLowerCase())}"><button data-del-skill="${k.id}">删除</button><div class="mt">${esc(k.name)}</div><div class="mm"><span>导入的技能</span><button data-use-skill="${k.id}" style="float:none;margin-left:auto">${isSkillEnabled(k.id) ? "已启用" : "启用"}</button></div></div>`).join("")}</div>
+      <button class="btn primary" id="importSkill" style="width:100%;margin-top:10px">导入 .md / SKILL.md</button>
+      <div class="note">多个技能同时启用时，系统会把它们的做事方法一起注入；本地模型上下文较小时会自动压缩每条技能说明。技能只是提示，不会自动获得新权限。</div></div>`;
+  } else if (currentTab === "plugins") {
+    body.innerHTML = `<div class="section"><h2>插件 · MCP</h2><p class="desc">连接远程 HTTPS MCP 服务，工具会直接出现在 Agent 的工具列表里。手机版不能运行 npx 本地插件；本地插件请在电脑端安装。可以连续连接多个服务，所有服务的工具会一起生效。</p>
+      ${field("MCP 地址（HTTPS）", "mcpUrl", settings.mcpUrl, "url", "https://example.com/mcp")}
+      ${field("Token（可选）", "mcpToken", settings.mcpToken, "password", "Bearer token")}
+      <button class="btn primary" id="mcpConnect" style="width:100%;margin-bottom:10px">连接并读取工具</button>
+      <div class="row"><input id="mcpQuery" placeholder="搜索 MCP 注册表，例如 filesystem" style="flex:1;background:#131318;border:1px solid #2a2a33;border-radius:10px;padding:10px 11px;font-size:12.5px;outline:0;color:var(--text)"><button class="btn" id="mcpSearch">搜索</button></div>
+      <div class="statusline" id="mcpStatus">${mcpServers().length ? "已连接 " + mcpServers().length + " 个服务 · " + mcpAllTools().length + " 个工具" : "未连接"}</div>
+      <div id="mcpTools">${mcpServers().map(srv => `<div class="memitem"><button data-del-mcp="${esc(srv.id)}">断开</button><div class="mt">${esc(srv.name || srv.url)}</div><div class="mm"><span>${esc(srv.url)}</span><span>${(srv.tools || []).length} 个工具</span></div>${(srv.tools || []).map(t => `<div class="kv"><span>${esc(t.name)}</span><span style="text-align:right;max-width:60%">${esc((t.description || "").slice(0, 60))}</span></div>`).join("")}</div>`).join("") || `<div class="note">还没有连接插件服务。填地址后点“连接并读取工具”；可以重复连接多个服务。</div>`}</div>
+      <div id="mcpMarket"></div>
+      <div class="note">插件工具由第三方服务执行，请只连接你信任的地址；工具调用会真实发出网络请求。</div></div>`;
+  } else if (currentTab === "qq") {
+    body.innerHTML = `<div class="section"><h2>QQ 助手 · OneBot v11</h2><p class="desc">通过 NapCat、LLOneBot 等 OneBot v11 网关收发 QQ 私聊。第一步在网关客户端用手机小号扫码登录；本 App 不收集 QQ 密码，也不做扫码。</p>
+      ${field("OneBot HTTP 地址", "qqEndpoint", settings.qqEndpoint, "url", "http://127.0.0.1:3001")}
+      ${field("Access Token（可选）", "qqToken", settings.qqToken, "password", "网关 token")}
+      ${field("允许的 QQ 号（可选，逗号分隔）", "qqAllow", settings.qqAllow, "text", "123456 或留空接收所有私聊")}
+      ${field("AI 性格（仅 QQ 会话）", "qqPersona", settings.qqPersona, "text", "例如：简洁、可靠、先给结论")}
+      <div class="row" style="margin:10px 0"><button class="btn" id="qqTest">测试网关</button><button class="btn primary" id="qqStart">${settings.qqEnabled ? "重新连接" : "启动监听"}</button><button class="btn ghost" id="qqStop">停止</button></div>
+      <div class="kv"><span>状态</span><span id="qqStatus">${esc(settings.qqStatus || "未启动")}</span></div>
+      <div class="kv"><span>登录小号</span><span id="qqSelf">${esc(settings.qqSelfId || "未获取")}</span></div>
+      <div class="note">网关启动后点“启动监听”；收到私聊后 AI 会在“QQ 123456”会话里工作，并通过网关回复。扫码、验证码、账号密码都在网关客户端完成，本 App 不保存密码。提示词和工具权限仍按当前设置执行。</div>
+      <div class="note">OneBot WebSocket 地址由 HTTP 地址自动推导，例如 http://127.0.0.1:3001 → ws://127.0.0.1:3001。</div></div>`;
+  } else if (currentTab === "bili") {
+    body.innerHTML = `<div class="section"><h2>B站助手</h2><p class="desc">用 B站官方页面登录、打开首页或按关键词搜索视频；登录由 B站官方完成，本 App 不保存手机号、验证码、Cookie 或密码。</p>
+      ${field("搜索关键词", "biliQuery", "", "text", "例如 ESP、我的世界、编程教程")}
+      <div class="row" style="margin:10px 0"><button class="btn primary" id="biliLogin">打开 B站官方登录</button><button class="btn" id="biliHome">打开首页</button><button class="btn" id="biliSearch">搜索视频</button></div>
+      <div class="row"><button class="btn" id="biliApp">打开 B站 App</button><button class="btn" id="biliScreen">读取当前屏幕</button></div>
+      <div class="note" id="biliStatus" style="margin-top:10px">未操作</div>
+      <div class="note">AI 可以读取当前屏幕并帮你找视频、总结评论；但“用你的账号发评论/艾特小号/转发”属于对外发布，必须你逐条确认，当前版本不自动执行，也不代你登录。B站手机号验证码只会在 B站官方页面出现。</div>
+      <div class="note">想登录官方账号：点上面按钮，在 B站官方页面输入手机号并接收官方验证码，或用 B站支持的 QQ/微信登录。本 App 不接管这些凭据。</div></div>`;
+  } else if (currentTab === "stats") {
+    let st = {};
+    try { const a = android(); if (a && a.deviceStats) st = JSON.parse(a.deviceStats() || "{}"); } catch (e) {}
+    const cores = Math.max(1, Number(st.cores || 1));
+    const load1 = parseFloat(String(st.load || "0").split(" ")[0]) || 0;
+    const pressure = Math.min(100, Math.round(load1 / cores * 100));
+    const memTotal = Number(st.memTotal || 0), memAvail = Number(st.memAvail || 0);
+    const memPct = memTotal ? Math.round((memTotal - memAvail) / memTotal * 100) : 0;
+    const diskPct = Number(st.diskTotal || 0) ? Math.round((Number(st.diskTotal) - Number(st.diskFree || 0)) / Number(st.diskTotal) * 100) : 0;
+    body.innerHTML = `<div class="section"><h2>运行状态</h2><p class="desc">真实读取手机 CPU 负载、内存、存储和电池；任务在后台运行时也会更新到通知栏/悬浮窗。</p>
+      <div class="kv"><span>CPU 核心</span><span>${cores} 核</span></div>
+      <div class="kv"><span>CPU 压力</span><span style="color:${pressure > 80 ? "#d36b6b" : pressure > 55 ? "#d8b36b" : "#6ea887"}">${pressure}% · load ${esc(String(st.load || "—").split(" ").slice(0,2).join(" "))}</span></div>
+      <div class="kv"><span>内存</span><span>${memTotal ? (bytes(memAvail) + " 可用 / " + bytes(memTotal) + "（已用 " + memPct + "%）") : "不可读"}</span></div>
+      <div class="kv"><span>存储</span><span>${st.diskTotal ? (bytes(st.diskFree) + " 可用 / " + bytes(st.diskTotal) + "（已用 " + diskPct + "%）") : "不可读"}</span></div>
+      <div class="kv"><span>电池</span><span>${st.battery != null ? esc(String(st.battery) + "%" + (st.charging ? " · 充电中" : "")) : "不可读"}</span></div>
+      <div class="kv"><span>低内存</span><span>${st.lowMemory ? "是" : "否"}</span></div>
+      <div class="kv"><span>当前任务</span><span>${activeRun ? esc(activeRun.title + " · " + activeRun.detail) : "待命"}</span></div>
+      <button class="btn" onclick="renderSettings()" style="margin-top:12px">刷新状态</button>
+      <div class="note">CPU 压力超过 80% 时橙色/红色提示；长时间建模或本地模型推理会明显升高。</div></div>`;
+  } else if (currentTab === "ability") {
+    let dev = {};
+    let acc = "未知";
+    try { dev = android() ? JSON.parse(android().deviceInfo()) : {}; } catch (e) {}
+    try { acc = android() ? (android().accessibilityEnabled() === "true" ? "已开启" : "未开启（读屏/点击会失败）") : "非 Android"; } catch (e) {}
+    const abi = dev.abi || "未知";
+    const model = ((dev.manufacturer || "") + " " + (dev.brand || "") + " " + (dev.model || "")).trim() || "未知";
+    const screen = (dev.width || "?") + "×" + (dev.height || "?") + " @" + (dev.density || "?") + "dpi";
+    body.innerHTML = `<div class="section"><h2>能力</h2><p class="desc">手机独立版内置的能力。需要系统权限的功能会在使用时由系统弹窗，必须你本人同意。</p>
+      <div class="kv"><span>设备</span><span>${esc(model)}</span></div>
+      <div class="kv"><span>系统</span><span>Android ${esc(dev.android || "")}（SDK ${esc(dev.sdk || "")}）</span></div>
+      <div class="kv"><span>屏幕</span><span>${esc(screen)}</span></div>
+      <div class="kv"><span>CPU ABI</span><span>${esc(abi)}</span></div>
+      <div class="kv"><span>无障碍服务</span><span>${esc(acc)}</span></div>
+      <div class="kv"><span>本地引擎</span><span>${abi.indexOf("64") >= 0 ? "arm64-v8a" : "armeabi-v7a（32 位）"}</span></div>
+      <div id="toolList">${TOOL_DEFS.map(t => `<div class="kv"><span>${esc(t.function.name)}</span><span style="text-align:right;max-width:65%">${esc(t.function.description)}</span></div>`).join("")}</div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="grantPerm">申请存储/定位权限</button><button class="btn" id="enableAcc">开启屏幕权限</button><button class="btn" id="testScreen">读一次屏幕</button><button class="btn" id="listAppsBtn">识别已安装应用</button></div>
+      <div class="statusline" id="screenTest">未读取</div>
+      <div class="note">屏幕读取/点击依赖 Android 无障碍服务，只能读取当前可见界面，不能绕过验证码或支付确认。浏览器自动化需要系统级调试能力，手机版只提供打开网页和读取网页。</div></div>`;
+  } else if (currentTab === "memory") {
+    body.innerHTML = `<div class="section"><h2>记忆</h2><p class="desc">像人一样会记、会忘：重要度高忘得慢，被搜索命中会重新变清晰。只存本机。</p>
+      ${field("记一件事", "memText", "", "text", "例如：我的常用端口是 8787")}
+      <div class="row"><div class="field"><label>重要度</label><select id="memImp"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div><button class="btn primary" id="memAdd" style="align-self:flex-end;margin-bottom:12px">记住</button></div>
+      ${field("搜索记忆", "memQuery", "", "text", "输入关键词")}
+      <button class="btn" id="memSearch">搜索</button>
+      <div id="memList" style="margin-top:14px">${memories.map(m => `<div class="memitem"><button data-forget="${m.id}">忘记</button><div class="mt">${esc(m.text)}</div><div class="mm"><span>重要度 ${m.importance}/5</span><span>强度 ${memStrength(m).toFixed(2)}</span><span>回想 ${m.recallCount || 0} 次</span></div></div>`).join("") || `<div class="note">还没有记忆。告诉它你的偏好、项目名、常用路径，会慢慢积累。</div>`}</div></div>`;
+  } else if (currentTab === "tools") {
+    body.innerHTML = `<div class="section"><h2>工作目录与文件</h2><p class="desc">选择一个手机文件夹作为工作目录，Agent 的读写默认都在这里；也可以只用应用私有目录。</p>
+      <div class="kv"><span>当前工作目录</span><span>${esc(settings.workspaceName || "未选择")}</span></div>
+      <div class="row" style="margin:12px 0"><button class="btn primary" id="pickWorkspace">选择目录</button><button class="btn" id="clearWorkspace">清除</button></div>
+      <div class="row" style="margin-bottom:12px"><button class="btn" id="refreshFiles">刷新文件</button><button class="btn" id="pickModel2">选择模型</button></div>
+      <div class="statusline" id="fileList">点刷新查看</div>
+      <div class="note">目录权限由系统文件选择器授予，App 只能访问你选中的文件夹；模型文件也是同样方式导入。</div>
+      <div class="note">云端模型可以读网页、打开浏览器、分享文本；不能控制手机其他 App 的界面。需要屏幕操作要单独开无障碍服务，本版没有默认开启。</div></div>`;
+  } else if (currentTab === "about") {
+    body.innerHTML = `<div class="section"><h2>关于</h2><div class="kv"><span>版本</span><span>2.0.0</span></div><div class="kv"><span>作者</span><span>ETC</span></div><div class="kv"><span>签名</span><span>ETC Code Signing</span></div><div class="kv"><span>依赖</span><span>无电脑端依赖</span></div>
+      <div class="row" style="margin-top:14px"><button class="btn" id="checkUpdate">检查更新</button><button class="btn" id="openRepo">打开仓库</button></div>
+      <div class="statusline" id="updateInfo">点检查更新读取 GitHub Release</div>
+      <div class="note">云端 API 由你自己填写并承担费用；本地 GGUF 完全离线，数据不出手机。</div></div>`;
+  }
+  bindSettings();
+}
+function bindSettings() {
+  const bind = (id, ev, fn) => { const el = $("#" + id); if (el) el[ev] = fn; };
+  bind("setMode", "onchange", e => { settings.mode = e.target.value; persist(); updateTop(); if (settings.mode === "local") setTimeout(maybeAutoLoadLocal, 200); });
+  bind("setWork", "onchange", e => { settings.workMode = e.target.value; persist(); updateTop(); toast("已切换到" + modeOf().name + "模式"); });
+  bind("setThink", "onchange", e => { settings.thinkLevel = e.target.value; persist(); updateTop(); toast("AI 思考等级：" + thinkCfg().name); });
+  bind("saveModel", "onclick", () => {
+    settings.baseUrl = ($("#setBase").value || "").trim(); settings.apiKey = ($("#setKey").value || "").trim();
+    settings.model = ($("#setModel").value || "").trim(); settings.thinkLevel = ($("#setThink").value || "advanced");
+    settings.temperature = Number($("#setTemp").value) || 0.6;
+    settings.maxTokens = Number($("#setMax").value) || 2048;
+    settings.imageUrl = ($("#setImageUrl").value || "").trim(); settings.imageKey = ($("#setImageKey").value || "").trim();
+    settings.imageModel = ($("#setImageModel").value || "").trim(); persist(); updateTop(); toast("已保存");
+  });
+  bind("pickModel", "onclick", () => { if (android()) android().pickModel("pick"); else toast("不在 Android 环境"); });
+  bind("pickModel2", "onclick", () => { if (android()) android().pickModel("pick"); else toast("不在 Android 环境"); });
+  bind("loadModel", "onclick", () => { settings.localCtx = Number($("#setCtx").value) || 2048; settings.localThreads = Number($("#setThreads").value) || 4; persist(); loadLocal(); });
+  bind("autoLocal", "onchange", e => { settings.autoLoadLocal = !!e.target.checked; persist(); if (settings.autoLoadLocal && settings.localPath) setTimeout(maybeAutoLoadLocal, 200); });
+  bind("localUnlimited", "onchange", e => { settings.localUnlimited = !!e.target.checked; persist(); toast(e.target.checked ? "本地长任务已开启（最多40轮）" : "已恢复按思考等级限制"); });
+  bind("unloadModel", "onclick", () => { if (android()) android().unloadLocal(); settings.localLoaded = false; persist(); updateTop(); renderSettings(); toast("已卸载"); });
+  bind("memAdd", "onclick", () => { const t = $("#memText").value; const imp = Number($("#memImp").value); if (memSave(t, imp)) { toast("已记住"); renderSettings(); } });
+  bind("memSearch", "onclick", () => { const q = $("#memQuery").value; const hit = memSearch(q, 10); $("#memList").innerHTML = hit.map(m => `<div class="memitem"><button data-forget="${m.id}">忘记</button><div class="mt">${esc(m.text)}</div><div class="mm"><span>重要度 ${m.importance}/5</span><span>强度 ${memStrength(m).toFixed(2)}</span><span>回想 ${m.recallCount || 0} 次</span></div></div>`).join("") || `<div class="note">没有找到</div>`; bindForgets(); });
+  bind("skillSearch", "oninput", e => {
+    const q = String(e.target.value || "").trim().toLowerCase();
+    skillQuery = e.target.value || "";
+    document.querySelectorAll("#skillList [data-skill-name]").forEach(el => { el.style.display = (!q || el.dataset.skillName.includes(q)) ? "" : "none"; });
+  });
+  document.querySelectorAll("[data-use-skill]").forEach(b => b.onclick = () => { toggleSkill(b.dataset.useSkill); toast(isSkillEnabled(b.dataset.useSkill) ? "已停用技能" : "已启用技能"); });
+  bind("skillAll", "onclick", () => enableAllSkills());
+  bind("skillNone", "onclick", () => { settings.skillIds = ["auto"]; settings.skillId = "auto"; persist(); updateTop(); renderSettings(); toast("已只保留自动技能"); });
+  document.querySelectorAll("[data-del-skill]").forEach(b => b.onclick = () => { settings.customSkills = (settings.customSkills || []).filter(x => x.id !== b.dataset.delSkill); if (settings.skillId === b.dataset.delSkill) settings.skillId = "auto"; persist(); renderSettings(); });
+  bind("clearRuns", "onclick", () => { runs = runs.filter(r => r.status === "running"); persistRuns(); renderSettings(); toast("已清空完成任务"); });
+  bind("overlayPerm", "onclick", () => { if (!android()) return toast("不在 Android 环境"); toast(android().openOverlaySettings()); });
+  bind("keepAlive", "onclick", () => { if (!android()) return toast("不在 Android 环境"); toast(android().startBackground ? android().startBackground() : "当前版本不支持"); });
+  bind("importSkill", "onclick", () => pickText("skill"));
+  bind("termCwd", "onchange", e => { settings.terminalCwd = (e.target.value || "").trim(); persist(); toast("已保存终端目录"); });
+  bind("termRun", "onclick", () => { const a = android(); if (!a || !a.shellExec) return toast("当前版本不支持终端"); settings.terminalCwd = ($("#termCwd") ? $("#termCwd").value.trim() : settings.terminalCwd); persist(); $("#termOut").textContent = "运行中…"; $("#termOut").textContent = a.shellExec($("#termCmd").value || "", settings.terminalCwd || ""); });
+  bind("biliLogin", "onclick", () => { const a=android(); if(!a) return toast("不在 Android 环境"); a.openUrl("https://passport.bilibili.com/login"); $("#biliStatus").textContent="已在官方页面打开登录；请本人完成手机号/验证码或第三方登录"; });
+  bind("biliHome", "onclick", () => { const a=android(); if(!a) return toast("不在 Android 环境"); a.openUrl("https://www.bilibili.com"); $("#biliStatus").textContent="已打开 B站首页"; });
+  bind("biliApp", "onclick", () => { const a=android(); if(!a) return toast("不在 Android 环境"); $("#biliStatus").textContent=a.openApp("bilibili"); });
+  bind("biliSearch", "onclick", () => { const a=android(); if(!a) return toast("不在 Android 环境"); const q=($("#biliQuery")&&$("#biliQuery").value.trim())||"编程"; a.openUrl("https://search.bilibili.com/all?keyword="+encodeURIComponent(q)); $("#biliStatus").textContent="已打开 B站搜索："+q; });
+  bind("biliScreen", "onclick", () => { const a=android(); if(!a) return toast("不在 Android 环境"); const r=a.screenRead(); $("#biliStatus").textContent=String(r).slice(0,1800); });
+  bind("qqTest", "onclick", qqTest);
+  bind("qqStart", "onclick", qqStart);
+  bind("qqStop", "onclick", qqStop);
+  bind("mcpConnect", "onclick", async () => {
+    const st = $("#mcpStatus"); st.textContent = "连接中…";
+    try { const tools = await mcpConnect(true); st.textContent = "已连接 " + tools.length + " 个工具"; renderSettings(); toast("MCP 已连接"); }
+    catch (e) { st.textContent = "连接失败：" + e.message; }
+  });
+  bind("mcpSearch", "onclick", async () => {
+    const box = $("#mcpMarket"); box.innerHTML = `<div class="note">搜索中…</div>`;
+    try {
+      const items = await mcpMarketSearch($("#mcpQuery").value.trim());
+      box.innerHTML = items.length ? items.map((x, i) => `<div class="memitem"><button data-mcp-url="${esc(x.url)}">填入地址</button><div class="mt">${esc(x.name)}</div><div class="mm"><span>${esc(x.desc.slice(0, 120))}</span></div></div>`).join("") : `<div class="note">没有找到可直接连接的远程服务</div>`;
+      box.querySelectorAll("[data-mcp-url]").forEach(b => b.onclick = () => { $("#mcpUrl").value = b.dataset.mcpUrl; toast("已填入地址，点连接"); });
+    } catch (e) { box.innerHTML = `<div class="note">搜索失败：${esc(e.message)}</div>`; }
+  });
+  document.querySelectorAll("[data-del-mcp]").forEach(b => b.onclick = () => {
+    settings.mcpServers = mcpServers().filter(x => x.id !== b.dataset.delMcp);
+    settings.mcpTools = mcpAllTools(); persist(); updateTop(); renderSettings(); toast("已断开插件服务");
+  });
+  bind("grantPerm", "onclick", () => { const a = android(); if (a && a.requestPermissions) a.requestPermissions(); else toast("不在 Android 环境"); });
+  bind("enableAcc", "onclick", () => { if (android()) $("#screenTest").textContent = android().openAccessibility(); else toast("不在 Android 环境"); });
+  bind("testScreen", "onclick", () => { if (android()) $("#screenTest").textContent = android().screenRead().slice(0, 2500); else toast("不在 Android 环境"); });
+  bind("listAppsBtn", "onclick", () => { const a=android(); if(!a) return toast("不在 Android 环境"); try { const d=JSON.parse(a.listApps()||"{}"); $("#screenTest").textContent=(d.apps||[]).map(x=>x.name+"  ("+x.package+")").join("\n")||"没有读到应用"; } catch(e){ $("#screenTest").textContent="读取失败："+e.message; } });
+  bind("pickWorkspace", "onclick", () => pickWorkspace());
+  bind("clearWorkspace", "onclick", () => { settings.workspaceName = ""; settings.workspaceUri = ""; persist(); updateTop(); renderSettings(); toast("已清除工作目录"); });
+  bind("refreshFiles", "onclick", () => { const a = android(); if (!a) return; try { const arr = JSON.parse(settings.workspaceUri ? a.wsList() : a.listFiles()); $("#fileList").textContent = (settings.workspaceUri ? "[" + settings.workspaceName + "]\n" : "[应用私有]\n") + (arr.map(f => f.name + "  " + bytes(f.size)).join("\n") || "目录为空"); } catch (e) { $("#fileList").textContent = "读取失败：" + e.message; } });
+  bind("checkUpdate", "onclick", async () => {
+    $("#updateInfo").textContent = "检查中…";
+    const r = await http("GET", "https://api.github.com/repos/ETQWFD/deepseek-mobile/releases/latest", { "Accept": "application/vnd.github+json" }, null);
+    try { const d = JSON.parse(r.body); $("#updateInfo").textContent = d.tag_name ? ("最新 Release：" + d.tag_name + "\n" + (d.html_url || "")) : ("检查失败：" + (r.error || r.body.slice(0, 100))); } catch (e) { $("#updateInfo").textContent = "检查失败：" + (r.error || ""); }
+  });
+  bind("openRepo", "onclick", () => android() && android().openUrl("https://github.com/ETQWFD/deepseek-mobile"));
+  bindForgets();
+}
+function bindForgets() {
+  document.querySelectorAll("[data-forget]").forEach(b => b.onclick = () => {
+    memories = memories.filter(m => m.id !== b.dataset.forget); persist(); updateTop(); renderSettings();
+  });
+}
+
+function openSettings(tab) { currentTab = tab || "model"; $("#settings").classList.add("show"); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === currentTab)); renderSettings(); const sb=$("#settingsBody"); if(sb) sb.scrollTop=0; }
+function closeSettings() { $("#settings").classList.remove("show"); persist(); updateTop(); }
+
+// ---------- events ----------
+$("#modeTabs").onclick = (e) => { const b = e.target.closest("button[data-mode]"); if (!b) return; settings.workMode = b.dataset.mode; persist(); updateTop(); toast("已切换到" + modeOf().name + "模式"); };
+$("#wsBar").onclick = () => pickWorkspace();
+$("#btnNew").onclick = () => newSession();
+$("#btnHistory").onclick = openDrawer;
+$("#drawer").onclick = (e) => { if (e.target.id === "drawer") closeDrawer(); };
+$("#btnSettings").onclick = () => openSettings("model");
+$("#modelPick").onclick = openModelSheet;
+$("#modelSheet").onclick = (e) => { if (e.target.id === "modelSheet") closeModelSheet(); };
+$("#processSheet").onclick = (e) => { if (e.target.id === "processSheet") closeProcess(); };
+$("#btnCloseSettings").onclick = closeSettings;
+$("#tabs").onclick = (e) => { const b = e.target.closest("button[data-tab]"); if (!b) return; currentTab = b.dataset.tab; document.querySelectorAll("#tabs button").forEach(x => x.classList.toggle("active", x === b)); renderSettings(); };
+$("#btnSend").onclick = () => { if (busy) requestStop(); else send(); };
+$("#btnAttach").onclick = () => pickText("attach");
+$("#input").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } });
+$("#input").addEventListener("input", () => { const el = $("#input"); el.style.height = "auto"; el.style.height = Math.min(140, el.scrollHeight) + "px"; });
+$("#chat").addEventListener("click", (e) => { const q = e.target.closest("[data-q]"); if (q) { $("#input").value = q.dataset.q; send(); } });
+$("#sessionList").addEventListener("click", (e) => {
+  const del = e.target.closest("[data-del]"); if (del) { e.stopPropagation(); deleteSession(del.dataset.del); return; }
+  const row = e.target.closest(".sess"); if (row) openSession(row.dataset.id);
+});
+$("#drawer").querySelector(".drawerpanel").addEventListener("click", e => e.stopPropagation());
+
+// init
+if (android()) {
+  try { if (!android().localReady || !android().localReady()) { settings.localLoading = false; settings.localLoaded = false; persist(); } } catch (e) {}
+  try {
+    const wi = JSON.parse(android().workspaceInfo());
+    if (wi && wi.ready && !settings.workspaceUri) { settings.workspaceUri = wi.uri; settings.workspaceName = wi.name; persist(); }
+    android().toast("DeepSeek Mobile 已就绪");
+  } catch (e) {}
+}
+renderSessions(); renderChat(); updateTop();
+window.__onResume = function () {
+  if (settings.autoLoadLocal !== false && settings.localPath && !settings.localLoading) {
+    try { if (!android().localReady || !android().localReady()) maybeAutoLoadLocal(); } catch (e) {}
+  }
+};
+setTimeout(maybeAutoLoadLocal, 700);
+if (settings.qqEnabled) setTimeout(() => qqStart(), 1200);
+</script>
+</body>
+</html>
