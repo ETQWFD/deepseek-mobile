@@ -28,7 +28,7 @@ public class AgentTaskService extends Service {
     public static final int NOTIF_ID = 4101;
     private static volatile AgentTaskService instance;
     private static volatile String state = "idle";
-    private static volatile String title = "agent_etc";
+    private static volatile String title = "DeepSeek Mobile";
     private static volatile String detail = "待命";
     private PowerManager.WakeLock wake;
     private TextView overlay;
@@ -37,7 +37,7 @@ public class AgentTaskService extends Service {
 
     public static void update(String s, String t, String d) {
         state = s == null ? "idle" : s;
-        title = t == null || t.isEmpty() ? "agent_etc" : t;
+        title = t == null || t.isEmpty() ? "DeepSeek Mobile" : t;
         detail = d == null ? "" : d;
         AgentTaskService i = instance;
         if (i != null) i.ui.post(i::render);

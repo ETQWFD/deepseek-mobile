@@ -135,7 +135,7 @@ public class NativeBridge {
                 conn.setRequestMethod(method == null || method.isEmpty() ? "GET" : method.toUpperCase());
                 conn.setConnectTimeout(20000);
                 conn.setReadTimeout(120000);
-                conn.setRequestProperty("User-Agent", "agent_etc-mobile/1.6.0");
+                conn.setRequestProperty("User-Agent", "deepseek-mobile/2.0.0");
                 if (headersJson != null && !headersJson.isEmpty()) {
                     JSONObject h = new JSONObject(headersJson);
                     Iterator<String> it = h.keys();
@@ -183,7 +183,7 @@ public class NativeBridge {
 
     @JavascriptInterface
     public String screenRead() {
-        if (!AgentAccessibilityService.isReady()) return "{\"enabled\":false,\"error\":\"无障碍服务未开启，请在系统设置里授权 agent_etc\"}";
+        if (!AgentAccessibilityService.isReady()) return "{\"enabled\":false,\"error\":\"无障碍服务未开启，请在系统设置里授权 DeepSeek Mobile\"}";
         return AgentAccessibilityService.dumpScreen();
     }
 
@@ -199,7 +199,7 @@ public class NativeBridge {
             Intent i = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.startActivity(i);
-            return "已打开系统无障碍设置；请找到 agent_etc 并开启，然后回到这里点“读一次屏幕”。";
+            return "已打开系统无障碍设置；请找到 DeepSeek Mobile 并开启，然后回到这里点“读一次屏幕”。";
         } catch (Exception e) { return "打开设置失败：" + e.getMessage(); }
     }
 
@@ -780,7 +780,7 @@ public class NativeBridge {
                 zipText(z, "ppt/slides/_rels/slide" + i + ".xml.rels", "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout1.xml\"/></Relationships>");
             }
             zipText(z, "docProps/core.xml", "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><dc:title>" + xml(deckTitle) + "</dc:title><dc:creator>ETC</dc:creator></cp:coreProperties>");
-            zipText(z, "docProps/app.xml", "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\"><Application>agent_etc</Application></Properties>");
+            zipText(z, "docProps/app.xml", "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\"><Application>DeepSeek Mobile</Application></Properties>");
             z.finish(); z.close();
             byte[] data = bytes.toByteArray();
             if (workspaceUri != null) {
@@ -925,7 +925,7 @@ public class NativeBridge {
     public String copyText(String text) {
         try {
             ClipboardManager cm = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-            cm.setPrimaryClip(ClipData.newPlainText("agent_etc", text));
+            cm.setPrimaryClip(ClipData.newPlainText("DeepSeek Mobile", text));
             return "已复制到剪贴板";
         } catch (Exception e) { return "复制失败：" + e.getMessage(); }
     }
